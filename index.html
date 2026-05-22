@@ -4,55 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jamby — Современный мессенджер</title>
-    <meta name="description" content="Jamby — быстрый, приватный и стильный мессенджер">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
             --primary: #6b4eff;
-            --primary-dark: #5a3de8;
+            --bg: #0a0a14;
+            --card: rgba(255,255,255,0.06);
+            --text: #e0e0ff;
         }
         
+        [data-theme="light"] {
+            --bg: #f8f9fc;
+            --card: rgba(0,0,0,0.06);
+            --text: #1a1a2e;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #0a0a14 0%, #1a1433 100%);
-            color: #e0e0ff;
+            background: var(--bg);
+            color: var(--text);
             line-height: 1.6;
-            overflow-x: hidden;
+            transition: background 0.4s;
         }
 
         header {
             position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(10, 10, 20, 0.95);
+            top: 0; width: 100%;
+            background: rgba(10,10,20,0.95);
             backdrop-filter: blur(12px);
             z-index: 1000;
             padding: 16px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(107, 78, 255, 0.2);
+        }
+
+        [data-theme="light"] header {
+            background: rgba(255,255,255,0.95);
         }
 
         .logo {
             font-size: 32px;
             font-weight: 800;
-            background: linear-gradient(90deg, #6b4eff, #c4a1ff);
+            background: linear-gradient(90deg, #6b4eff, #a78bff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        nav a {
-            color: #ddd;
-            text-decoration: none;
-            margin-left: 35px;
-            font-weight: 500;
-            transition: 0.3s;
-        }
-
-        nav a:hover {
-            color: var(--primary);
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text);
         }
 
         .hero {
@@ -62,66 +67,81 @@
             justify-content: center;
             text-align: center;
             position: relative;
-            background: url('https://images.unsplash.com/photo-1614624532983-4ce03382d63d?ixlib=rb-4.0.3&auto=format&fit=crop&q=80') center/cover no-repeat;
-            background-attachment: fixed;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(45deg, rgba(10,10,20,0.85), rgba(26,20,51,0.75));
+            background: linear-gradient(rgba(10,10,20,0.8), rgba(10,10,20,0.85)), 
+                        url('https://images.unsplash.com/photo-1614624532983-4ce03382d63d?ixlib=rb-4.0.3&auto=format&fit=crop&q=80') center/cover;
         }
 
         .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 800px;
-            padding: 0 20px;
+            animation: fadeUp 1s ease forwards;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .hero-content h1 {
-            font-size: 5.2rem;
+            font-size: 5.5rem;
             font-weight: 900;
             margin-bottom: 20px;
-            line-height: 1.1;
         }
 
         .hero-content p {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             margin-bottom: 40px;
             opacity: 0.9;
         }
 
+        .platforms {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .platform-btn {
+            padding: 14px 28px;
+            border: 2px solid rgba(107,78,255,0.3);
+            background: transparent;
+            color: var(--text);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .platform-btn.active, .platform-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
         .download-btn {
-            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(45deg, var(--primary), #8b6eff);
             color: white;
-            padding: 22px 60px;
-            font-size: 1.45rem;
+            padding: 20px 65px;
+            font-size: 1.5rem;
             font-weight: 700;
             border: none;
             border-radius: 60px;
             cursor: pointer;
             box-shadow: 0 15px 40px rgba(107, 78, 255, 0.5);
-            transition: all 0.4s ease;
+            transition: all 0.4s;
+            margin-top: 20px;
         }
 
         .download-btn:hover {
-            transform: translateY(-8px) scale(1.05);
+            transform: scale(1.08) translateY(-5px);
             box-shadow: 0 20px 50px rgba(107, 78, 255, 0.7);
         }
 
         section {
             padding: 110px 5%;
-        }
-
-        h2 {
-            text-align: center;
-            font-size: 3rem;
-            margin-bottom: 70px;
-            background: linear-gradient(90deg, #c4a1ff, #6b4eff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            animation: fadeUp 0.8s ease forwards;
         }
 
         .features {
@@ -131,113 +151,117 @@
         }
 
         .feature-card {
-            background: rgba(255,255,255,0.06);
+            background: var(--card);
             padding: 45px 30px;
             border-radius: 24px;
             text-align: center;
-            transition: 0.4s;
-            border: 1px solid rgba(107,78,255,0.1);
+            transition: all 0.4s;
         }
 
         .feature-card:hover {
-            transform: translateY(-15px);
-            background: rgba(107, 78, 255, 0.12);
-            border-color: var(--primary);
-        }
-
-        .feature-card i {
-            font-size: 3.2rem;
-            margin-bottom: 25px;
-            color: var(--primary);
-        }
-
-        .screenshots {
-            display: flex;
-            gap: 25px;
-            overflow-x: auto;
-            padding: 20px 0;
-            scrollbar-width: thin;
-        }
-
-        .screenshot {
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            min-width: 280px;
+            transform: translateY(-15px) scale(1.03);
         }
 
         footer {
             background: #08080f;
-            padding: 80px 5% 40px;
+            padding: 70px 5% 40px;
             text-align: center;
         }
 
-        .warning {
-            margin-top: 20px;
-            font-size: 1rem;
-            opacity: 0.75;
+        [data-theme="light"] footer {
+            background: #e8e8f0;
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 
     <header>
         <div class="logo">Jamby</div>
-        <nav>
-            <a href="#features">Возможности</a>
-            <a href="#download">Скачать</a>
-            <a href="https://t.me/Jamby_messenger" target="_blank">Telegram</a>
-        </nav>
+        <div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
     </header>
 
     <section class="hero">
         <div class="hero-content">
             <h1>Jamby</h1>
-            <p>Мессенджер, который действительно удобный и быстрый</p>
+            <p>Быстрый. Красивый. Приватный.</p>
+
+            <div class="platforms" id="platforms">
+                <button class="platform-btn active" data-platform="windows">
+                    <i class="fab fa-windows"></i> Windows
+                </button>
+                <button class="platform-btn" data-platform="android">
+                    <i class="fab fa-android"></i> Android
+                </button>
+                <button class="platform-btn" data-platform="mac">
+                    <i class="fab fa-apple"></i> macOS
+                </button>
+            </div>
+
             <button class="download-btn" onclick="startDownload()">
-                <i class="fas fa-download"></i> Скачать последнюю версию
+                <i class="fas fa-download"></i> Скачать сейчас
             </button>
-            <p class="warning">Автоматическое скачивание • Актуальная версия</p>
+            
+            <p style="margin-top: 25px; opacity: 0.8;">Автоматическое скачивание</p>
         </div>
     </section>
 
     <section id="features">
-        <h2>Почему Jamby?</h2>
+        <h2 style="text-align:center; margin-bottom:60px;">Возможности</h2>
         <div class="features">
             <div class="feature-card">
-                <i class="fas fa-bolt"></i>
+                <i class="fas fa-bolt" style="font-size:3rem; color:var(--primary); margin-bottom:20px;"></i>
                 <h3>Молниеносная скорость</h3>
-                <p>Мгновенная доставка сообщений, голосовых и звонков</p>
+                <p>Мгновенная доставка сообщений</p>
             </div>
             <div class="feature-card">
-                <i class="fas fa-shield-alt"></i>
-                <h3>Максимальная приватность</h3>
-                <p>Сквозное шифрование и минимум сбора данных</p>
+                <i class="fas fa-shield-alt" style="font-size:3rem; color:var(--primary); margin-bottom:20px;"></i>
+                <h3>Приватность</h3>
+                <p>Надёжное шифрование</p>
             </div>
             <div class="feature-card">
-                <i class="fas fa-palette"></i>
-                <h3>Красивый дизайн</h3>
-                <p>Современный интерфейс с поддержкой тёмной темы</p>
+                <i class="fas fa-palette" style="font-size:3rem; color:var(--primary); margin-bottom:20px;"></i>
+                <h3>Стильный дизайн</h3>
+                <p>Красивый интерфейс</p>
             </div>
         </div>
     </section>
 
-    <section id="download" style="background: rgba(0,0,0,0.3); text-align: center;">
-        <h2>Скачать Jamby</h2>
-        <button class="download-btn" onclick="startDownload()" style="font-size: 1.6rem; padding: 25px 70px;">
-            <i class="fas fa-download"></i> Скачать сейчас
-        </button>
-        <p class="warning">Файл из официального источника</p>
-    </section>
-
     <footer>
-        <p style="font-size: 1.1rem;">© 2026 Jamby Messenger</p>
+        <p>© 2026 Jamby Messenger</p>
         <p style="margin-top: 15px;">
-            Официальный канал: 
-            <a href="https://t.me/Jamby_messenger" target="_blank" style="color: #7b9cff;">t.me/Jamby_messenger</a>
+            Канал: <a href="https://t.me/Jamby_messenger" target="_blank" style="color:#7b9cff;">t.me/Jamby_messenger</a>
         </p>
     </footer>
 
     <script>
+        // Темная / Светлая тема
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Меняем иконку
+            const icon = document.querySelector('.theme-toggle i');
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        }
+
+        // Выбор платформы
+        document.querySelectorAll('.platform-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Автоматическое скачивание
         function startDownload() {
             const url = "https://t.me/Jamby_messenger/410";
             const link = document.createElement('a');
@@ -248,17 +272,16 @@
             document.body.removeChild(link);
         }
 
-        // Плавный скролл
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                if (this.getAttribute('href').length > 1) {
-                    e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
+        // Загрузка сохранённой темы
+        window.onload = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.body.setAttribute('data-theme', savedTheme);
+                if (savedTheme === 'light') {
+                    document.querySelector('.theme-toggle i').classList.replace('fa-moon', 'fa-sun');
                 }
-            });
-        });
+            }
+        };
     </script>
 </body>
-  </html>
+</html>
