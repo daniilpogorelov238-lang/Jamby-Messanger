@@ -8,39 +8,19 @@
     <style>
         :root {
             --primary: #6b4eff;
-            --bg: #0a0a14;
-            --card: rgba(255,255,255,0.06);
-            --text: #e0e0ff;
+            --glass: rgba(255, 255, 255, 0.09);
+            --border: rgba(255, 255, 255, 0.18);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
+            color: #e0e0ff;
+            overflow-x: hidden;
+            background: #0a0814;
         }
 
-        header {
-            position: fixed;
-            top: 0; width: 100%;
-            background: rgba(10,10,20,0.95);
-            backdrop-filter: blur(12px);
-            z-index: 1000;
-            padding: 16px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 32px;
-            font-weight: 800;
-            background: linear-gradient(90deg, #6b4eff, #a78bff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
+        /* Анимированный фон */
         .hero {
             height: 100vh;
             display: flex;
@@ -48,168 +28,176 @@
             justify-content: center;
             text-align: center;
             position: relative;
-            background: linear-gradient(rgba(10,10,20,0.85), rgba(10,10,20,0.9)), 
-                        url('https://images.unsplash.com/photo-1614624532983-4ce03382d63d?ixlib=rb-4.0.3&auto=format&fit=crop&q=80') center/cover;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #1a0033, #0a0a2e, #001a33);
+            animation: gradientShift 25s ease infinite;
+            z-index: 1;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle, rgba(107,78,255,0.25) 0%, transparent 60%);
+            animation: pulse 20s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+
+        .glass {
+            background: var(--glass);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo-img {
+            width: 140px;
+            height: 140px;
+            margin-bottom: 20px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
 
         .hero-content {
-            animation: fadeUp 1s ease forwards;
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
+            position: relative;
+            z-index: 2;
+            padding: 40px 30px;
+            max-width: 820px;
         }
 
         .hero-content h1 {
             font-size: 5.5rem;
             font-weight: 900;
-            margin-bottom: 20px;
+            background: linear-gradient(90deg, #ffffff, #c4a1ff, #6b4eff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
         }
 
-        .hero-content p {
-            font-size: 1.6rem;
-            margin-bottom: 40px;
-            opacity: 0.9;
-        }
-
-        .platforms {
+        .screenshots {
             display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 30px 0;
+            gap: 25px;
+            overflow-x: auto;
+            padding: 30px 0;
+            scrollbar-width: thin;
+            scrollbar-color: #6b4eff #1a1a2e;
         }
 
-        .platform-btn {
-            padding: 14px 28px;
-            border: 2px solid rgba(107,78,255,0.3);
-            background: transparent;
-            color: var(--text);
-            border-radius: 50px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .screenshot {
+            border-radius: 28px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            min-width: 320px;
+            transition: transform 0.4s;
         }
 
-        .platform-btn.active, .platform-btn:hover {
-            background: var(--primary);
-            border-color: var(--primary);
-            transform: translateY(-5px);
+        .screenshot:hover {
+            transform: scale(1.05);
         }
 
-        .download-btn {
-            background: linear-gradient(45deg, var(--primary), #8b6eff);
-            color: white;
-            padding: 20px 65px;
-            font-size: 1.5rem;
-            font-weight: 700;
-            border: none;
-            border-radius: 60px;
-            cursor: pointer;
-            box-shadow: 0 15px 40px rgba(107, 78, 255, 0.5);
-            transition: all 0.4s;
-            margin-top: 20px;
-        }
-
-        .download-btn:hover {
-            transform: scale(1.08) translateY(-5px);
-            box-shadow: 0 20px 50px rgba(107, 78, 255, 0.7);
-        }
-
-        section {
-            padding: 110px 5%;
+        #features {
+            padding: 120px 5%;
+            background: linear-gradient(135deg, #0f0a2e, #1a0033);
         }
 
         .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
             gap: 35px;
         }
 
         .feature-card {
-            background: var(--card);
-            padding: 45px 30px;
-            border-radius: 24px;
-            text-align: center;
-            transition: all 0.4s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-15px) scale(1.03);
-        }
-
-        footer {
-            background: #08080f;
-            padding: 70px 5% 40px;
+            padding: 48px 35px;
             text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">Jamby</div>
+    <header style="background: rgba(10,8,25,0.92); backdrop-filter: blur(16px); padding: 18px 5%;">
+        <div style="font-size: 32px; font-weight: 800; color: white;">Jamby</div>
     </header>
 
     <section class="hero">
-        <div class="hero-content">
+        <div class="hero-bg"></div>
+        <div class="hero-content glass">
+            <img src="/home/workdir/attachments/IMG_20260522_185421_430.jpg" alt="Jamby Logo" class="logo-img">
             <h1>Jamby</h1>
-            <p>Быстрый. Красивый. Приватный.</p>
+            <p style="font-size: 1.75rem; margin-bottom: 45px;">Мессенджер нового поколения</p>
 
-            <div class="platforms" id="platforms">
-                <button class="platform-btn active" data-platform="windows">
-                    <i class="fab fa-windows"></i> Windows
-                </button>
-                <button class="platform-btn" data-platform="android">
-                    <i class="fab fa-android"></i> Android
-                </button>
-                <button class="platform-btn" data-platform="mac">
-                    <i class="fab fa-apple"></i> macOS
-                </button>
+            <div class="platforms" style="margin: 40px 0;">
+                <button class="platform-btn active" style="padding:16px 34px; background:var(--glass); border:1px solid var(--border); color:white; border-radius:50px; margin:0 8px;"><i class="fab fa-windows"></i> Windows</button>
+                <button class="platform-btn" style="padding:16px 34px; background:var(--glass); border:1px solid var(--border); color:white; border-radius:50px; margin:0 8px;"><i class="fab fa-android"></i> Android</button>
+                <button class="platform-btn" style="padding:16px 34px; background:var(--glass); border:1px solid var(--border); color:white; border-radius:50px; margin:0 8px;"><i class="fab fa-apple"></i> macOS</button>
             </div>
 
-            <button class="download-btn" onclick="startDownload()">
+            <button class="download-btn" onclick="startDownload()" style="background:linear-gradient(45deg,#6b4eff,#9b7eff); color:white; padding:22px 75px; font-size:1.6rem; font-weight:700; border:none; border-radius:60px; cursor:pointer;">
                 <i class="fas fa-download"></i> Скачать сейчас
             </button>
-            
-            <p style="margin-top: 25px; opacity: 0.8;">Автоматическое скачивание</p>
+        </div>
+    </section>
+
+    <!-- Новая секция со скриншотами -->
+    <section id="screenshots" style="padding: 100px 5%; background: #0a0814;">
+        <h2 style="text-align:center; font-size: 3.2rem; margin-bottom: 60px;">Как выглядит Jamby</h2>
+        <div class="screenshots">
+            <img src="/home/workdir/attachments/IMG_20260522_185424_912.jpg" alt="Безопасность" class="screenshot">
+            <img src="/home/workdir/attachments/IMG_20260522_185425_225.jpg" alt="Профиль" class="screenshot">
+            <img src="/home/workdir/attachments/IMG_20260522_185424_780.jpg" alt="Лента" class="screenshot">
         </div>
     </section>
 
     <section id="features">
-        <h2 style="text-align:center; margin-bottom:60px;">Возможности</h2>
+        <h2 style="text-align:center; font-size: 3.3rem; margin-bottom: 80px;">Почему Jamby?</h2>
         <div class="features">
-            <div class="feature-card">
-                <i class="fas fa-bolt" style="font-size:3rem; color:var(--primary); margin-bottom:20px;"></i>
-                <h3>Молниеносная скорость</h3>
-                <p>Мгновенная доставка сообщений</p>
+            <div class="feature-card glass">
+                <i class="fas fa-bolt" style="font-size: 3.6rem; color: #a78bff; margin-bottom: 25px;"></i>
+                <h3>Мгновенная скорость</h3>
+                <p>Сообщения и звонки летят мгновенно</p>
             </div>
-            <div class="feature-card">
-                <i class="fas fa-shield-alt" style="font-size:3rem; color:var(--primary); margin-bottom:20px;"></i>
-                <h3>Приватность</h3>
-                <p>Надёжное шифрование</p>
+            <div class="feature-card glass">
+                <i class="fas fa-shield-alt" style="font-size: 3.6rem; color: #a78bff; margin-bottom: 25px;"></i>
+                <h3>Полная приватность</h3>
+                <p>Сквозное шифрование</p>
             </div>
-            <div class="feature-card">
-                <i class="fas fa-palette" style="font-size:3rem; color:var(--primary); margin-bottom:20px;"></i>
-                <h3>Стильный дизайн</h3>
-                <p>Красивый интерфейс</p>
+            <div class="feature-card glass">
+                <i class="fas fa-palette" style="font-size: 3.6rem; color: #a78bff; margin-bottom: 25px;"></i>
+                <h3>Красивый дизайн</h3>
+                <p>Жидкое стекло и плавные анимации</p>
             </div>
         </div>
     </section>
 
-    <footer>
-        <p>2026 Jamby Messenger</p>
+    <footer style="background: #0a0814; padding: 90px 5% 60px; text-align: center;">
+        <p>© 2026 Jamby Messenger</p>
         <p style="margin-top: 15px;">
-            Канал: <a href="https://t.me/Jamby_messenger" target="_blank" style="color:#7b9cff;">t.me/Jamby_messenger</a>
+            Официальный канал: 
+            <a href="https://t.me/Jamby_messenger" target="_blank" style="color: #a78bff;">t.me/Jamby_messenger</a>
         </p>
     </footer>
 
     <script>
-        // Выбор платформы
+        // Активная кнопка платформы
         document.querySelectorAll('.platform-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
@@ -217,7 +205,6 @@
             });
         });
 
-        // Автоматическое скачивание
         function startDownload() {
             const url = "https://t.me/Jamby_messenger/410";
             const link = document.createElement('a');
