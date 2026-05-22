@@ -13,10 +13,12 @@
             --text: #e0e0ff;
         }
         
-        [data-theme="light"] {
-            --bg: #f8f9fc;
-            --card: rgba(0,0,0,0.06);
-            --text: #1a1a2e;
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #f8f9fc;
+                --card: rgba(0,0,0,0.06);
+                --text: #1a1a2e;
+            }
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -40,7 +42,7 @@
             align-items: center;
         }
 
-        [data-theme="light"] header {
+        body.light header {
             background: rgba(255,255,255,0.95);
         }
 
@@ -168,12 +170,12 @@
             text-align: center;
         }
 
-        [data-theme="light"] footer {
+        body.light footer {
             background: #e8e8f0;
         }
     </style>
 </head>
-<body data-theme="dark">
+<body>
 
     <header>
         <div class="logo">Jamby</div>
@@ -238,16 +240,21 @@
     </footer>
 
     <script>
-        // Темная / Светлая тема
+        // Автоматическое определение системной темы
+        function setSystemTheme() {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.body.classList.toggle('light', !prefersDark);
+            
+            const icon = document.querySelector('.theme-toggle i');
+            icon.classList.toggle('fa-moon', prefersDark);
+            icon.classList.toggle('fa-sun', !prefersDark);
+        }
+
+        // Ручное переключение темы
         function toggleTheme() {
-            const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const isLight = document.body.classList.contains('light');
+            document.body.classList.toggle('light', !isLight);
             
-            body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            
-            // Меняем иконку
             const icon = document.querySelector('.theme-toggle i');
             icon.classList.toggle('fa-moon');
             icon.classList.toggle('fa-sun');
@@ -272,15 +279,12 @@
             document.body.removeChild(link);
         }
 
-        // Загрузка сохранённой темы
+        // Инициализация
         window.onload = () => {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                document.body.setAttribute('data-theme', savedTheme);
-                if (savedTheme === 'light') {
-                    document.querySelector('.theme-toggle i').classList.replace('fa-moon', 'fa-sun');
-                }
-            }
+            setSystemTheme();
+            
+            // Следим за изменениями системной темы
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setSystemTheme);
         };
     </script>
 </body>
