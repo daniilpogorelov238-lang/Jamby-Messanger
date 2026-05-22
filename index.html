@@ -12,14 +12,6 @@
             --card: rgba(255,255,255,0.06);
             --text: #e0e0ff;
         }
-        
-        @media (prefers-color-scheme: light) {
-            :root {
-                --bg: #f8f9fc;
-                --card: rgba(0,0,0,0.06);
-                --text: #1a1a2e;
-            }
-        }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -27,7 +19,6 @@
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
-            transition: background 0.4s;
         }
 
         header {
@@ -42,24 +33,12 @@
             align-items: center;
         }
 
-        body.light header {
-            background: rgba(255,255,255,0.95);
-        }
-
         .logo {
             font-size: 32px;
             font-weight: 800;
             background: linear-gradient(90deg, #6b4eff, #a78bff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-
-        .theme-toggle {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text);
         }
 
         .hero {
@@ -69,7 +48,7 @@
             justify-content: center;
             text-align: center;
             position: relative;
-            background: linear-gradient(rgba(10,10,20,0.8), rgba(10,10,20,0.85)), 
+            background: linear-gradient(rgba(10,10,20,0.85), rgba(10,10,20,0.9)), 
                         url('https://images.unsplash.com/photo-1614624532983-4ce03382d63d?ixlib=rb-4.0.3&auto=format&fit=crop&q=80') center/cover;
         }
 
@@ -143,7 +122,6 @@
 
         section {
             padding: 110px 5%;
-            animation: fadeUp 0.8s ease forwards;
         }
 
         .features {
@@ -169,21 +147,12 @@
             padding: 70px 5% 40px;
             text-align: center;
         }
-
-        body.light footer {
-            background: #e8e8f0;
-        }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo">Jamby</div>
-        <div>
-            <button class="theme-toggle" onclick="toggleTheme()">
-                <i class="fas fa-moon"></i>
-            </button>
-        </div>
     </header>
 
     <section class="hero">
@@ -240,26 +209,6 @@
     </footer>
 
     <script>
-        // Автоматическое определение системной темы
-        function setSystemTheme() {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            document.body.classList.toggle('light', !prefersDark);
-            
-            const icon = document.querySelector('.theme-toggle i');
-            icon.classList.toggle('fa-moon', prefersDark);
-            icon.classList.toggle('fa-sun', !prefersDark);
-        }
-
-        // Ручное переключение темы
-        function toggleTheme() {
-            const isLight = document.body.classList.contains('light');
-            document.body.classList.toggle('light', !isLight);
-            
-            const icon = document.querySelector('.theme-toggle i');
-            icon.classList.toggle('fa-moon');
-            icon.classList.toggle('fa-sun');
-        }
-
         // Выбор платформы
         document.querySelectorAll('.platform-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -278,14 +227,6 @@
             link.click();
             document.body.removeChild(link);
         }
-
-        // Инициализация
-        window.onload = () => {
-            setSystemTheme();
-            
-            // Следим за изменениями системной темы
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setSystemTheme);
-        };
     </script>
 </body>
 </html>
