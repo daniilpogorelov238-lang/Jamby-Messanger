@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jamby — Современный мессенджер</title>
+    <meta name="description" content="Jamby — быстрый, приватный и стильный мессенджер">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6b4eff;
+            --primary-dark: #5a3de8;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a0a14 0%, #1a1433 100%);
+            color: #e0e0ff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 20, 0.95);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            padding: 16px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(107, 78, 255, 0.2);
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #6b4eff, #c4a1ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav a {
+            color: #ddd;
+            text-decoration: none;
+            margin-left: 35px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            background: url('https://images.unsplash.com/photo-1614624532983-4ce03382d63d?ixlib=rb-4.0.3&auto=format&fit=crop&q=80') center/cover no-repeat;
+            background-attachment: fixed;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(45deg, rgba(10,10,20,0.85), rgba(26,20,51,0.75));
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .hero-content h1 {
+            font-size: 5.2rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+
+        .hero-content p {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .download-btn {
+            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 22px 60px;
+            font-size: 1.45rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 15px 40px rgba(107, 78, 255, 0.5);
+            transition: all 0.4s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(107, 78, 255, 0.7);
+        }
+
+        section {
+            padding: 110px 5%;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 70px;
+            background: linear-gradient(90deg, #c4a1ff, #6b4eff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 35px;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.06);
+            padding: 45px 30px;
+            border-radius: 24px;
+            text-align: center;
+            transition: 0.4s;
+            border: 1px solid rgba(107,78,255,0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-15px);
+            background: rgba(107, 78, 255, 0.12);
+            border-color: var(--primary);
+        }
+
+        .feature-card i {
+            font-size: 3.2rem;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .screenshots {
+            display: flex;
+            gap: 25px;
+            overflow-x: auto;
+            padding: 20px 0;
+            scrollbar-width: thin;
+        }
+
+        .screenshot {
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            min-width: 280px;
+        }
+
+        footer {
+            background: #08080f;
+            padding: 80px 5% 40px;
+            text-align: center;
+        }
+
+        .warning {
+            margin-top: 20px;
+            font-size: 1rem;
+            opacity: 0.75;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Jamby</div>
+        <nav>
+            <a href="#features">Возможности</a>
+            <a href="#download">Скачать</a>
+            <a href="https://t.me/Jamby_messenger" target="_blank">Telegram</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Jamby</h1>
+            <p>Мессенджер, который действительно удобный и быстрый</p>
+            <button class="download-btn" onclick="startDownload()">
+                <i class="fas fa-download"></i> Скачать последнюю версию
+            </button>
+            <p class="warning">Автоматическое скачивание • Актуальная версия</p>
+        </div>
+    </section>
+
+    <section id="features">
+        <h2>Почему Jamby?</h2>
+        <div class="features">
+            <div class="feature-card">
+                <i class="fas fa-bolt"></i>
+                <h3>Молниеносная скорость</h3>
+                <p>Мгновенная доставка сообщений, голосовых и звонков</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Максимальная приватность</h3>
+                <p>Сквозное шифрование и минимум сбора данных</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-palette"></i>
+                <h3>Красивый дизайн</h3>
+                <p>Современный интерфейс с поддержкой тёмной темы</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="download" style="background: rgba(0,0,0,0.3); text-align: center;">
+        <h2>Скачать Jamby</h2>
+        <button class="download-btn" onclick="startDownload()" style="font-size: 1.6rem; padding: 25px 70px;">
+            <i class="fas fa-download"></i> Скачать сейчас
+        </button>
+        <p class="warning">Файл из официального источника</p>
+    </section>
+
+    <footer>
+        <p style="font-size: 1.1rem;">© 2026 Jamby Messenger</p>
+        <p style="margin-top: 15px;">
+            Официальный канал: 
+            <a href="https://t.me/Jamby_messenger" target="_blank" style="color: #7b9cff;">t.me/Jamby_messenger</a>
+        </p>
+    </footer>
+
+    <script>
+        function startDownload() {
+            const url = "https://t.me/Jamby_messenger/410";
+            const link = document.createElement('a');
+            link.href = url;
+            link.target = "_blank";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Плавный скролл
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                if (this.getAttribute('href').length > 1) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+  </html>
