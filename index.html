@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Jamby — Private Messenger | Безопасный мессенджер</title>
-  <!-- Динамический favicon с версионированием для обхода кэша -->
-  <link rel="icon" id="dynamic-favicon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-weight='bold'%3E🪐%3C/text%3E%3C/svg%3E">
+  <!-- Множественные ссылки на favicon для разных браузеров -->
+  <link rel="icon" id="dynamic-favicon" sizes="any">
+  <link rel="icon" id="dynamic-favicon-svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" id="dynamic-apple-icon">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <style>
@@ -26,6 +28,9 @@
     .download-card { transition: all 0.2s ease; }
     .download-card:hover { transform: translateY(-3px); background: #3f3f46; }
     html { scroll-padding-top: 80px; }
+    .favicon-preview {
+      transition: all 0.2s ease;
+    }
   </style>
 </head>
 <body class="bg-zinc-950 text-white">
@@ -65,7 +70,7 @@
     </div>
   </nav>
 
-  <!-- Hero секция -->
+  <!-- Hero секция (Возможности) -->
   <section id="features" class="min-h-screen flex items-center chat-bg pt-20">
     <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
       <div class="text-center md:text-left">
@@ -163,11 +168,11 @@
         </div>
       </div>
 
-      <!-- Панель: Иконка сайта (с принудительным обновлением кэша) -->
+      <!-- Панель: Иконка сайта -->
       <div id="tab-favicon" class="p-6 space-y-6 overflow-y-auto max-h-[60vh] hidden">
         <div class="bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-2xl p-6 border border-zinc-700">
           <h3 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="fas fa-image text-blue-400"></i> Настройка иконки сайта</h3>
-          <p class="text-zinc-400 text-sm mb-6">Загрузите изображение — иконка изменится мгновенно и сохранится после перезагрузки страницы.</p>
+          <p class="text-zinc-400 text-sm mb-6">Загрузите изображение — иконка изменится мгновенно на всех вкладках (Возможности, О проекте, Скачать и т.д.).</p>
           
           <div class="bg-zinc-800/60 rounded-2xl p-5 mb-6 flex items-center gap-6 flex-wrap">
             <div class="text-center">
@@ -191,7 +196,7 @@
           </div>
         </div>
         <div class="text-xs text-zinc-500 p-3 text-center bg-zinc-800/30 rounded-xl">
-          💡 Совет: если иконка не обновилась сразу — обновите страницу (F5) или очистите кэш браузера (Ctrl+Shift+R).
+          💡 Иконка меняется на всех вкладках (Возможности, О проекте, Скачать) автоматически. Если не видно изменений — нажмите Ctrl+Shift+R (жесткое обновление).
         </div>
       </div>
 
@@ -212,8 +217,11 @@
     const ADMIN_PASSWORD = "jamby2026";
     let currentTab = "files";
 
-    // ГЛАВНАЯ ФУНКЦИЯ: обновление favicon с ПРИНУДИТЕЛЬНЫМ ОБХОДОМ КЭША
+    // ГЛАВНАЯ ФУНКЦИЯ: обновление favicon для ВСЕХ форматов и принудительный сброс кэша
     function updateFavicon(base64Data, mimeType) {
+      // Генерируем уникальный параметр для обхода кэша (используем timestamp + random)
+      const cacheBuster = Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+      
       let faviconUrl;
       if (base64Data && mimeType) {
         faviconUrl = `data:${mimeType};base64,${base64Data}`;
@@ -222,40 +230,78 @@
         faviconUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-weight='bold'%3E🪐%3C/text%3E%3C/svg%3E";
       }
       
-      // Добавляем параметр времени, чтобы полностью обойти кэш браузера
-      const timestamp = Date.now();
-      const finalUrl = faviconUrl.includes('?') ? `${faviconUrl}&_=${timestamp}` : `${faviconUrl}?_=${timestamp}`;
+      // Добавляем параметр кэша к URL (даже для data:URL это работает через обновление DOM)
+      const finalUrl = faviconUrl + (faviconUrl.includes('?') ? `&_cb=${cacheBuster}` : `?_cb=${cacheBuster}`);
       
-      // Находим или создаём элемент favicon
-      let link = document.querySelector("link[rel*='icon']");
+      // 1. Обновляем стандартный favicon
+      let link = document.querySelector("link[rel='icon']");
       if (!link) {
         link = document.createElement('link');
-        link.rel = "shortcut icon";
+        link.rel = "icon";
         document.head.appendChild(link);
       }
-      
-      // Принудительно меняем href с уникальным параметром
       link.href = finalUrl;
       
-      // Обновляем превью в админ-панели
+      // 2. Обновляем shortcut icon
+      let shortcutLink = document.querySelector("link[rel='shortcut icon']");
+      if (!shortcutLink) {
+        shortcutLink = document.createElement('link');
+        shortcutLink.rel = "shortcut icon";
+        document.head.appendChild(shortcutLink);
+      }
+      shortcutLink.href = finalUrl;
+      
+      // 3. Обновляем SVG favicon (если нужно)
+      let svgLink = document.querySelector("link[rel='icon'][type='image/svg+xml']");
+      if (!svgLink && (mimeType === 'image/svg+xml' || !base64Data)) {
+        svgLink = document.createElement('link');
+        svgLink.rel = "icon";
+        svgLink.type = "image/svg+xml";
+        document.head.appendChild(svgLink);
+      }
+      if (svgLink) svgLink.href = finalUrl;
+      
+      // 4. Обновляем Apple Touch Icon
+      let appleLink = document.querySelector("link[rel='apple-touch-icon']");
+      if (!appleLink) {
+        appleLink = document.createElement('link');
+        appleLink.rel = "apple-touch-icon";
+        document.head.appendChild(appleLink);
+      }
+      appleLink.href = finalUrl;
+      
+      // 5. ПРИНУДИТЕЛЬНО: удаляем старые ссылки и пересоздаём (для самых упрямых браузеров)
+      const allFavicons = document.querySelectorAll("link[rel*='icon']");
+      allFavicons.forEach(oldLink => {
+        if (oldLink !== link && oldLink !== shortcutLink && oldLink !== svgLink) {
+          oldLink.remove();
+        }
+      });
+      
+      // Обновляем превью в админ-панели (без кэш-бастера для отображения)
       const previewImg = document.getElementById('favicon-preview-img');
       if (previewImg) {
         previewImg.src = faviconUrl;
       }
       
-      // Сохраняем в localStorage для будущих загрузок
+      // Обновляем localStorage для сохранения после перезагрузки
       if (base64Data && mimeType) {
         localStorage.setItem('jambyFaviconBase64', base64Data);
         localStorage.setItem('jambyFaviconMime', mimeType);
-        localStorage.setItem('jambyFaviconTimestamp', timestamp);
+        localStorage.setItem('jambyFaviconCacheBuster', cacheBuster);
       } else {
         localStorage.removeItem('jambyFaviconBase64');
         localStorage.removeItem('jambyFaviconMime');
-        localStorage.removeItem('jambyFaviconTimestamp');
+        localStorage.removeItem('jambyFaviconCacheBuster');
       }
+      
+      // Дополнительно: обновляем title, чтобы "потормошить" вкладку (иногда помогает)
+      const currentTitle = document.title;
+      document.title = currentTitle + ' ';
+      setTimeout(() => { document.title = currentTitle; }, 50);
     }
 
-    // Загрузка favicon при старте страницы (с обходом кэша)
+    // Загрузка favicon при старте страницы
     function loadFaviconFromStorage() {
       const savedBase64 = localStorage.getItem('jambyFaviconBase64');
       const savedMime = localStorage.getItem('jambyFaviconMime');
@@ -290,7 +336,7 @@
         const base64 = e.target.result.split(',')[1];
         settings.faviconData = { base64: base64, mimeType: file.type };
         updateFavicon(base64, file.type);
-        alert("✅ Иконка изменена! Нажмите F5 для полного обновления (или иконка уже изменилась)");
+        alert("✅ Иконка изменена! Теперь она обновится на всех вкладках (Возможности, О проекте, Скачать)");
         saveAllSettingsSilent();
       };
       reader.readAsDataURL(file);
@@ -300,7 +346,7 @@
     function resetFaviconToDefault() {
       settings.faviconData = null;
       updateFavicon(null, null);
-      alert("🔄 Иконка сброшена на стандартную. Обновите страницу (F5) чтобы увидеть изменения.");
+      alert("🔄 Иконка сброшена на стандартную.");
       saveAllSettingsSilent();
     }
 
@@ -336,7 +382,7 @@
       }
     }
 
-    // ========== РАБОТА С ФАЙЛАМИ (без изменений) ==========
+    // ========== РАБОТА С ФАЙЛАМИ ==========
     function generateDemoDownloads() {
       const createPlaceholder = (name, details) => btoa(unescape(encodeURIComponent(`Демо-файл Jamby для ${name}\n${details}`)));
       const now = Date.now();
@@ -430,7 +476,7 @@
       const saved = localStorage.getItem('jambyFullSettings');
       if(saved) { try { const p = JSON.parse(saved); settings = p; if(!settings.downloads) settings.downloads = []; } catch(e) {} }
       if(!settings.downloads.length) settings.downloads = generateDemoDownloads();
-      // Загружаем favicon (приоритет у сохранённой)
+      // Загружаем favicon
       if(settings.faviconData && settings.faviconData.base64) {
         updateFavicon(settings.faviconData.base64, settings.faviconData.mimeType);
       } else {
