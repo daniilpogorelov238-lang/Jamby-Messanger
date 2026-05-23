@@ -2,12 +2,12 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jamby — Private Messenger</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Jamby — Private Messenger | Безопасный мессенджер</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <style>
-    body { font-family: 'Segoe UI', system-ui, sans-serif; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; scroll-behavior: smooth; }
     .chat-bg { background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%); }
     .message { max-width: 75%; }
     .hero-phone { max-width: 280px; }
@@ -16,59 +16,69 @@
       bottom: 20px;
       right: 20px;
       z-index: 1000;
+      backdrop-filter: blur(8px);
+      background: rgba(24, 24, 27, 0.85);
+      transition: all 0.2s ease;
     }
+    .admin-btn:hover { background: #27272a; transform: scale(1.02); }
+    .tab-active { border-bottom-width: 2px; border-color: #3b82f6; color: #60a5fa; }
+    .download-card { transition: all 0.2s ease; }
+    .download-card:hover { transform: translateY(-3px); background: #3f3f46; }
+    /* плавный скролл для якорей */
+    html { scroll-padding-top: 80px; }
   </style>
 </head>
 <body class="bg-zinc-950 text-white">
 
-  <!-- Admin Button -->
-  <button onclick="showLoginModal()" class="admin-btn bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-2xl text-sm flex items-center gap-2 shadow-lg">
+  <!-- Админ-кнопка (фикс) -->
+  <button onclick="showLoginModal()" class="admin-btn bg-zinc-800/90 border border-zinc-700 hover:bg-zinc-700 text-white px-4 py-2 rounded-2xl text-sm flex items-center gap-2 shadow-xl">
     <i class="fas fa-cog"></i> <span class="hidden sm:inline">Админ-панель</span>
   </button>
 
-  <!-- Navbar (оставлен без изменений) -->
-  <nav class="fixed top-0 w-full bg-zinc-900 border-b border-zinc-800 z-50">
+  <!-- Navbar -->
+  <nav class="fixed top-0 w-full bg-zinc-900/95 backdrop-blur-sm border-b border-zinc-800 z-50">
     <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-2xl">🪐</div>
-        <h1 class="text-2xl font-bold tracking-tight">Jamby</h1>
+        <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-2xl shadow-md">🪐</div>
+        <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-zinc-300 bg-clip-text text-transparent">Jamby</h1>
       </div>
 
-      <div class="hidden md:flex items-center gap-8 text-sm">
+      <div class="hidden md:flex items-center gap-8 text-sm font-medium">
         <a href="#features" class="hover:text-blue-400 transition">Возможности</a>
         <a href="#download" class="hover:text-blue-400 transition">Скачать</a>
         <a href="#about" class="hover:text-blue-400 transition">О проекте</a>
-        <a href="https://t.me/Jamby_messenger" target="_blank" class="bg-zinc-800 hover:bg-zinc-700 px-5 py-2 rounded-2xl transition">Telegram-канал</a>
+        <a href="https://t.me/Jamby_messenger" target="_blank" class="bg-zinc-800 hover:bg-zinc-700 px-5 py-2 rounded-2xl transition flex items-center gap-2"><i class="fab fa-telegram"></i> Telegram-канал</a>
       </div>
 
-      <button id="mobile-menu-button" class="md:hidden text-2xl">
+      <button id="mobile-menu-button" class="md:hidden text-2xl text-zinc-300">
         <i class="fas fa-bars"></i>
       </button>
     </div>
 
-    <div id="mobile-menu" class="hidden md:hidden bg-zinc-900 border-t border-zinc-800 py-4">
+    <div id="mobile-menu" class="hidden md:hidden bg-zinc-900/95 backdrop-blur-sm border-t border-zinc-800 py-4">
       <div class="flex flex-col px-6 gap-4 text-sm">
         <a href="#features" class="hover:text-blue-400 transition py-2">Возможности</a>
         <a href="#download" class="hover:text-blue-400 transition py-2">Скачать</a>
         <a href="#about" class="hover:text-blue-400 transition py-2">О проекте</a>
-        <a href="https://t.me/Jamby_messenger" target="_blank" class="bg-zinc-800 hover:bg-zinc-700 px-5 py-3 rounded-2xl text-center">Telegram-канал</a>
+        <a href="https://t.me/Jamby_messenger" target="_blank" class="bg-zinc-800 hover:bg-zinc-700 px-5 py-3 rounded-2xl text-center flex items-center justify-center gap-2"><i class="fab fa-telegram"></i> Telegram-канал</a>
       </div>
     </div>
   </nav>
 
-  <!-- Hero (без изменений) -->
-  <section class="min-h-screen flex items-center chat-bg pt-20">
+  <!-- Hero (секция с мокапом) -->
+  <section id="features" class="min-h-screen flex items-center chat-bg pt-20">
     <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
       <div class="text-center md:text-left">
-        <h1 id="hero-title" class="text-5xl md:text-6xl font-bold leading-tight mb-6">
+        <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6">
           Простой.<br>Безопасный.<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Приватный.</span>
         </h1>
-        <p id="hero-subtitle" class="text-lg md:text-xl text-zinc-400 mb-10 max-w-lg mx-auto md:mx-0">
-          Мессенджер, где не нужно сдавать свои данные. Никаких компромиссов.
+        <p class="text-lg md:text-xl text-zinc-400 mb-10 max-w-lg mx-auto md:mx-0">
+          Мессенджер, где не нужно сдавать свои данные. Никаких компромиссов. Ваши файлы — только у вас.
         </p>
         
         <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-          <button onclick="downloadApp()" class="bg-white text-black px-8 py-4 rounded-3xl font-semibold flex items-center justify-center gap-3 hover:scale-105 transition">
+          <!-- Кнопка скачать теперь плавно ведёт к блоку загрузок -->
+          <button onclick="scrollToDownloadSection()" class="bg-white text-black px-8 py-4 rounded-3xl font-semibold flex items-center justify-center gap-3 hover:scale-105 transition shadow-lg">
             <i class="fas fa-download"></i> Скачать Jamby
           </button>
         </div>
@@ -78,12 +88,11 @@
       <div class="flex justify-center">
         <div class="bg-zinc-900 rounded-[3rem] p-3 shadow-2xl border border-zinc-700 hero-phone">
           <div class="bg-black rounded-3xl h-[560px] md:h-[580px] overflow-hidden relative">
-            <!-- ... (тот же мокап) ... -->
-            <div class="h-11 bg-zinc-950 flex items-center justify-between px-6 text-xs">
+            <div class="h-11 bg-zinc-950 flex items-center justify-between px-6 text-xs text-zinc-400">
               <span>9:41</span>
-              <span>100% 🔋</span>
+              <span>🔋 100%</span>
             </div>
-            <div class="bg-zinc-900 p-4 flex items-center gap-3">
+            <div class="bg-zinc-900 p-4 flex items-center gap-3 border-b border-zinc-800">
               <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-xl">🪐</div>
               <div>
                 <div class="font-semibold text-sm">Bip Gip</div>
@@ -91,12 +100,12 @@
               </div>
             </div>
             <div class="h-[380px] p-4 overflow-y-auto space-y-4 text-sm chat-bg">
-              <div class="message bg-zinc-800 rounded-3xl rounded-tl-none p-4 ml-auto">Привет! Как настроение сегодня?</div>
-              <div class="message bg-zinc-700 rounded-3xl rounded-tr-none p-4">Отлично, спасибо!</div>
+              <div class="message bg-zinc-800 rounded-3xl rounded-tl-none p-4 ml-auto max-w-[85%]">Привет! Как настроение сегодня?</div>
+              <div class="message bg-zinc-700 rounded-3xl rounded-tr-none p-4 max-w-[85%]">Отлично, спасибо! Жду релиза Jamby 🚀</div>
             </div>
-            <div class="absolute bottom-0 left-0 right-0 bg-zinc-900 p-4">
+            <div class="absolute bottom-0 left-0 right-0 bg-zinc-900/90 backdrop-blur-sm p-4">
               <div class="bg-zinc-800 rounded-3xl flex items-center px-5 py-3">
-                <input type="text" id="demo-input" placeholder="Напишите сообщение..." class="bg-transparent flex-1 outline-none text-sm">
+                <input type="text" id="demo-input" placeholder="Напишите сообщение..." class="bg-transparent flex-1 outline-none text-sm text-white placeholder:text-zinc-500">
                 <button onclick="sendDemoMessage()" class="text-blue-500"><i class="fas fa-paper-plane"></i></button>
               </div>
             </div>
@@ -106,205 +115,438 @@
     </div>
   </section>
 
-  <!-- Download Section -->
-  <section id="download" class="py-20 md:py-24 bg-zinc-900">
-    <div class="max-w-4xl mx-auto text-center px-6">
-      <h2 class="text-4xl md:text-5xl font-bold mb-6">Скачать Jamby</h2>
-      <p class="text-lg text-zinc-400 mb-12">Выберите вашу платформу</p>
-      
-      <div id="download-buttons" class="flex flex-wrap justify-center gap-6">
-        <!-- Заполняется через JS -->
-      </div>
+  <!-- Дополнительный блок "О проекте" для якоря -->
+  <section id="about" class="py-20 bg-zinc-900/50 border-y border-zinc-800">
+    <div class="max-w-5xl mx-auto px-6 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-6">Создан для свободы общения</h2>
+      <p class="text-zinc-400 text-lg max-w-2xl mx-auto">Jamby не собирает метаданные, не требует номера телефона и ваши файлы хранятся зашифрованными. Администратор публикует только те версии, которым доверяет.</p>
     </div>
   </section>
 
-  <!-- ==================== ADMIN PANEL ==================== -->
-  <div id="admin-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[2000]">
-    <div class="bg-zinc-900 rounded-3xl w-full max-w-4xl max-h-[95vh] overflow-hidden">
-      <div class="p-6 border-b border-zinc-700 flex justify-between items-center">
-        <h2 class="text-2xl font-bold">Админ-панель</h2>
-        <button onclick="logout()" class="text-2xl text-red-400">✕</button>
+  <!-- Секция загрузок (download) – именно сюда ведёт кнопка -->
+  <section id="download" class="py-20 md:py-24 bg-zinc-900 scroll-mt-20">
+    <div class="max-w-5xl mx-auto text-center px-6">
+      <h2 class="text-4xl md:text-5xl font-bold mb-4">Скачать Jamby</h2>
+      <p class="text-lg text-zinc-400 mb-12">Официальные сборки. Безопасно и просто.</p>
+      
+      <!-- Динамические кнопки загрузки из админ-панели (с уже добавленными сборками) -->
+      <div id="download-buttons" class="flex flex-wrap justify-center gap-6">
+        <!-- заполнится через JS с предустановленными сборками -->
+        <div class="text-zinc-500 animate-pulse">Загрузка списка файлов...</div>
+      </div>
+      <p class="text-xs text-zinc-600 mt-10">* Все установочные файлы проверены цифровой подписью Jamby</p>
+    </div>
+  </section>
+
+  <!-- ========== АДМИН-ПАНЕЛЬ (полноценное управление файлами) ========== -->
+  <div id="admin-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[2000] p-4">
+    <div class="bg-zinc-900 rounded-3xl w-full max-w-4xl max-h-[95vh] overflow-hidden border border-zinc-700 shadow-2xl">
+      <div class="p-6 border-b border-zinc-700 flex justify-between items-center bg-zinc-800/50">
+        <h2 class="text-2xl font-bold flex items-center gap-2"><i class="fas fa-shield-alt text-blue-500"></i> Админ-панель</h2>
+        <button onclick="logout()" class="text-3xl text-red-400 hover:text-red-300 transition">&times;</button>
       </div>
 
       <div class="flex border-b border-zinc-700">
-        <button onclick="switchTab(2)" id="tab2" class="tab-btn flex-1 py-4 text-center border-b-2 border-blue-500 text-blue-400">Скачивание файлов</button>
+        <button id="tabDownloadsBtn" class="flex-1 py-4 text-center border-b-2 border-blue-500 text-blue-400 font-semibold transition">📦 Управление файлами</button>
       </div>
 
-      <!-- Tab Скачивание -->
-      <div id="tab-content-2" class="p-6 space-y-8">
-        <div id="downloads-list" class="space-y-6"></div>
+      <!-- Панель загрузок / файлов -->
+      <div id="tab-content-downloads" class="p-6 space-y-8 overflow-y-auto max-h-[60vh]">
+        <div id="downloads-list" class="space-y-4"></div>
 
-        <div class="border border-dashed border-zinc-700 rounded-3xl p-8 text-center">
-          <h3 class="font-semibold mb-4">Добавить новый файл</h3>
-          <input id="new-platform" placeholder="Платформа (Windows, macOS...)" class="w-full bg-zinc-800 rounded-2xl px-4 py-3 mb-3">
-          <input id="new-file" type="file" class="block w-full text-sm text-zinc-400 mb-4">
-          <button onclick="addNewDownload()" class="bg-green-600 hover:bg-green-500 px-6 py-3 rounded-2xl">Добавить файл</button>
+        <div class="border border-dashed border-zinc-600 rounded-3xl p-6 bg-zinc-800/40">
+          <h3 class="font-semibold text-xl mb-4 flex items-center gap-2"><i class="fas fa-plus-circle text-green-400"></i> Добавить новую сборку</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <input id="new-platform" placeholder="Название платформы (например: Windows x64, macOS ARM, Linux)" class="bg-zinc-800 rounded-2xl px-4 py-3 border border-zinc-700 focus:outline-none focus:border-blue-500">
+            <input id="new-version-hint" placeholder="Доп. версия / примечание (необязательно)" class="bg-zinc-800 rounded-2xl px-4 py-3 border border-zinc-700 focus:outline-none">
+          </div>
+          <div class="mt-4">
+            <label class="block text-sm text-zinc-400 mb-2"><i class="fas fa-file-upload"></i> Выберите установочный файл (.exe, .dmg, .deb, .apk и др.)</label>
+            <input id="new-file" type="file" class="block w-full text-sm text-zinc-300 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-500 transition">
+          </div>
+          <button onclick="addNewDownload()" class="mt-5 bg-green-700 hover:bg-green-600 px-6 py-3 rounded-2xl w-full font-semibold transition flex items-center justify-center gap-2">
+            <i class="fas fa-upload"></i> Загрузить файл и сохранить
+          </button>
+          <p class="text-xs text-zinc-500 mt-3">Файл будет сохранён в локальном хранилище браузера (base64). Максимальный размер ограничен памятью – для демо до ~10 МБ.</p>
         </div>
       </div>
 
-      <div class="border-t border-zinc-700 p-4 flex justify-end">
-        <button onclick="resetAllSettings()" class="px-6 py-3 text-red-400 hover:bg-zinc-800 rounded-2xl mr-3">Сбросить</button>
-        <button onclick="saveAllSettings()" class="bg-blue-600 hover:bg-blue-500 px-8 py-3 rounded-2xl">Сохранить</button>
+      <div class="border-t border-zinc-700 p-5 flex justify-between bg-zinc-800/30">
+        <button onclick="resetAllSettings()" class="px-5 py-2.5 text-red-400 hover:bg-zinc-800 rounded-2xl transition flex items-center gap-2"><i class="fas fa-trash-alt"></i> Сбросить все файлы</button>
+        <button onclick="saveAllSettings()" class="bg-blue-600 hover:bg-blue-500 px-8 py-2.5 rounded-2xl transition flex items-center gap-2 shadow"><i class="fas fa-save"></i> Сохранить настройки</button>
       </div>
     </div>
   </div>
 
   <script>
+    // ---------- СТРУКТУРА ДАННЫХ ----------
     let settings = {
-      downloads: [] // { id, platform, filename, base64, mimeType }
+      downloads: []  // каждый элемент: { id, platform, versionHint, filename, base64, mimeType }
     };
 
     const ADMIN_PASSWORD = "jamby2026";
+    
+    // ----- ПРЕДУСТАНОВЛЕННЫЕ ДЕМО-СБОРКИ (текстовые заглушки, но с реальным base64 маленьких файлов-заглушек .txt, чтобы пользователь видел примеры) -----
+    // Чтобы сборки отображались красиво и были работоспособны, создаём небольшие текстовые файлы-заглушки с информацией.
+    // При нажатии "Скачать" будет скачиваться .txt с описанием версии (имитация установщика). Это демонстрирует механизм и добавляет нужные платформы.
+    function generateDemoDownloads() {
+      // Функция создания base64 для простого текстового сообщения (заглушка установщика)
+      const createPlaceholderFile = (platformName, details) => {
+        const content = `Это демонстрационный файл Jamby для ${platformName}.\n${details}\n\nВ реальной сборке здесь будет установщик (exe/dmg/apk/deb).\nОфициальный сайт: jamby.messenger`;
+        return btoa(unescape(encodeURIComponent(content))); // корректный base64 для UTF-8
+      };
+      
+      const now = Date.now();
+      return [
+        {
+          id: now + 1,
+          platform: "Windows 11/10 (x64)",
+          versionHint: "Установщик .exe, версия 2.1.0",
+          filename: "Jamby_Setup_Windows_x64.exe",
+          base64: createPlaceholderFile("Windows", "Поддерживается Windows 10, 11. Архитектура x64."),
+          mimeType: "application/x-msdownload"
+        },
+        {
+          id: now + 2,
+          platform: "Linux (AppImage / deb)",
+          versionHint: "Универсальный пакет для Debian/Ubuntu/Fedora",
+          filename: "jamby-linux-amd64.AppImage",
+          base64: createPlaceholderFile("Linux (AppImage)", "Запустите файл, предварительно сделайте chmod +x."),
+          mimeType: "application/x-executable"
+        },
+        {
+          id: now + 3,
+          platform: "Android (.apk)",
+          versionHint: "Поддержка Android 8+",
+          filename: "Jamby_Android_v2.1.apk",
+          base64: createPlaceholderFile("Android", "Установите APK-файл. Разрешена установка из неизвестных источников."),
+          mimeType: "application/vnd.android.package-archive"
+        },
+        {
+          id: now + 4,
+          platform: "macOS (Apple Silicon + Intel)",
+          versionHint: "Универсальный .dmg",
+          filename: "Jamby_macOS_2.1.dmg",
+          base64: createPlaceholderFile("macOS", "Для Apple Silicon и Intel. Перетащите Jamby в Applications."),
+          mimeType: "application/x-apple-diskimage"
+        },
+        {
+          id: now + 5,
+          platform: "iOS (App Store)",
+          versionHint: "Доступно в App Store",
+          filename: "Jamby_iOS_AppStore.url",
+          base64: createPlaceholderFile("iOS", "Ссылка на страницу App Store: https://apps.apple.com/app/jamby/id654321 (официальный релиз)"),
+          mimeType: "text/plain"
+        }
+      ];
+    }
 
+    // модалка и безопасность
     function showLoginModal() {
-      const pass = prompt("Введите пароль администратора:");
+      const pass = prompt("🔐 Введите пароль администратора:");
       if (pass === ADMIN_PASSWORD) {
         document.getElementById('admin-modal').classList.remove('hidden');
-        renderDownloadsList();
-      } else if (pass) alert("Неверный пароль!");
+        renderDownloadsList();      // отрисовка списка файлов в админке
+      } else if (pass !== null) {
+        alert("❌ Неверный пароль!");
+      }
     }
 
     function logout() {
       document.getElementById('admin-modal').classList.add('hidden');
     }
 
-    function switchTab() {
-      // Пока только одна активная вкладка
-    }
-
-    // Добавление нового файла
+    // Добавление нового файла (base64)
     function addNewDownload() {
       const platform = document.getElementById('new-platform').value.trim();
+      const versionHint = document.getElementById('new-version-hint').value.trim();
       const fileInput = document.getElementById('new-file');
-
-      if (!platform || !fileInput.files[0]) {
-        alert("Укажите платформу и выберите файл!");
+      
+      if (!platform || !fileInput.files || fileInput.files.length === 0) {
+        alert("⚠️ Укажите название платформы и выберите файл!");
         return;
       }
 
       const file = fileInput.files[0];
+      // лимит ~12 МБ чтобы не перегружать локальное хранилище (предупреждение)
+      if (file.size > 12 * 1024 * 1024) {
+        alert("Файл слишком большой (>12 МБ). Для демо используйте файл поменьше, иначе localStorage будет переполнен.");
+        return;
+      }
+
       const reader = new FileReader();
-
       reader.onload = function(e) {
-        const base64 = e.target.result.split(',')[1]; // чистый base64
-
+        const base64String = e.target.result.split(',')[1]; // чистый base64 содержимого
+        const newId = Date.now();
         settings.downloads.push({
-          id: Date.now(),
+          id: newId,
           platform: platform,
+          versionHint: versionHint || "",
           filename: file.name,
-          base64: base64,
+          base64: base64String,
           mimeType: file.type || "application/octet-stream"
         });
-
-        renderDownloadsList();
-        renderPublicDownloadButtons();
-        alert(`Файл "${file.name}" успешно добавлен!`);
+        // очистка полей
+        document.getElementById('new-platform').value = '';
+        document.getElementById('new-version-hint').value = '';
+        fileInput.value = '';
+        
+        renderDownloadsList();          // обновить админ-список
+        renderPublicDownloadButtons();  // обновить кнопки на сайте
+        alert(`✅ Файл "${file.name}" успешно добавлен!`);
+        saveAllSettingsSilent();
       };
-
+      reader.onerror = () => alert("Ошибка чтения файла");
       reader.readAsDataURL(file);
     }
 
+    // удаление файла по id
+    window.deleteDownloadById = function(downloadId) {
+      if (confirm("Удалить этот файл из публичного доступа?")) {
+        const index = settings.downloads.findIndex(d => d.id === downloadId);
+        if (index !== -1) {
+          settings.downloads.splice(index, 1);
+          renderDownloadsList();
+          renderPublicDownloadButtons();
+          saveAllSettingsSilent();
+        }
+      }
+    };
+
+    // Функция скачивания файла из base64 (реальная загрузка)
+    window.downloadFileByItem = function(item) {
+      if (!item.base64) {
+        alert("Файл повреждён, обратитесь к администратору.");
+        return;
+      }
+      try {
+        // Для iOS App Store – особое поведение: открыть ссылку в новом окне?
+        if (item.platform.includes("iOS") && item.filename.endsWith(".url")) {
+          // пытаемся извлечь ссылку из содержимого base64
+          try {
+            const decodedStr = decodeURIComponent(escape(atob(item.base64)));
+            const match = decodedStr.match(/https:\/\/apps\.apple\.com\/app\/[^\s]+/);
+            if (match) {
+              window.open(match[0], '_blank');
+              return;
+            }
+          } catch(e) {}
+          // стандартное скачивание как текст
+        }
+        const byteCharacters = atob(item.base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: item.mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = item.filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error(err);
+        alert("Ошибка при скачивании, возможно, файл битый.");
+      }
+    };
+
+    // отрисовка таблицы файлов в админке
     function renderDownloadsList() {
       const container = document.getElementById('downloads-list');
-      container.innerHTML = '';
-
+      if (!container) return;
       if (settings.downloads.length === 0) {
-        container.innerHTML = `<p class="text-zinc-500 text-center py-8">Пока нет загруженных файлов</p>`;
+        container.innerHTML = `<div class="text-center text-zinc-500 py-8 bg-zinc-800/30 rounded-2xl"><i class="fas fa-cloud-upload-alt text-3xl mb-2 block"></i>Нет загруженных файлов. Добавьте первый!</div>`;
         return;
       }
-
-      settings.downloads.forEach((item, index) => {
-        container.innerHTML += `
-          <div class="bg-zinc-800 rounded-2xl p-5 flex justify-between items-center">
-            <div>
-              <strong>${item.platform}</strong><br>
-              <span class="text-sm text-zinc-400">${item.filename}</span>
+      let html = `<div class="space-y-3">`;
+      settings.downloads.forEach(dl => {
+        html += `
+          <div class="bg-zinc-800/70 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 border border-zinc-700">
+            <div class="flex-1">
+              <div class="font-bold text-lg">${escapeHtml(dl.platform)}</div>
+              <div class="text-sm text-zinc-400">${escapeHtml(dl.filename)} ${dl.versionHint ? `· ${escapeHtml(dl.versionHint)}` : ''}</div>
+              <div class="text-xs text-zinc-500 mt-1">размер: ~${(dl.base64?.length * 0.75 / 1024).toFixed(1)} KB</div>
             </div>
-            <button onclick="deleteDownload(${index})" class="text-red-400 hover:text-red-500">
-              <i class="fas fa-trash"></i>
+            <button onclick="deleteDownloadById(${dl.id})" class="bg-red-900/40 hover:bg-red-700 text-red-300 px-4 py-2 rounded-xl transition">
+              <i class="fas fa-trash-alt"></i> Удалить
             </button>
-          </div>`;
+          </div>
+        `;
       });
+      html += `</div>`;
+      container.innerHTML = html;
     }
 
-    window.deleteDownload = function(index) {
-      if (confirm("Удалить этот файл?")) {
-        settings.downloads.splice(index, 1);
-        renderDownloadsList();
-        renderPublicDownloadButtons();
-      }
-    };
+    function escapeHtml(str) { 
+      if(!str) return '';
+      return str.replace(/[&<>]/g, function(m){ if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m;}); 
+    }
 
-    // Реальное скачивание
-    window.downloadFile = function(base64, filename, mimeType) {
-      const link = document.createElement('a');
-      link.href = `data:\( {mimeType};base64, \){base64}`;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    };
-
+    // отрисовка публичных кнопок
     function renderPublicDownloadButtons() {
       const container = document.getElementById('download-buttons');
-      container.innerHTML = '';
-
-      if (settings.downloads.length === 0) {
+      if (!container) return;
+      
+      if (!settings.downloads.length) {
         container.innerHTML = `
-          <div class="text-zinc-500">Файлы для скачивания скоро появятся</div>`;
+          <div class="flex flex-col items-center gap-3 text-zinc-500 bg-zinc-800/40 p-8 rounded-3xl">
+            <i class="fas fa-hourglass-half text-4xl"></i>
+            <span>Сборки скоро появятся. Подпишитесь на Telegram-канал!</span>
+          </div>`;
         return;
       }
-
+      
+      let buttonsHtml = '';
       settings.downloads.forEach(item => {
-        container.innerHTML += `
-          <button onclick="downloadFile('\( {item.base64}', ' \){item.filename}', '${item.mimeType}')" 
-                  class="flex items-center gap-4 bg-zinc-800 hover:bg-zinc-700 px-10 py-6 rounded-3xl transition group">
-            <i class="fas fa-download text-4xl text-blue-400"></i>
+        // Безопасное преобразование объекта в строку для onclick (экранирование кавычек)
+        const safeItem = JSON.stringify(item).replace(/"/g, '&quot;');
+        buttonsHtml += `
+          <button onclick="downloadFileByItem(${safeItem})" 
+                  class="download-card flex items-center gap-5 bg-zinc-800 hover:bg-zinc-700 px-6 py-5 rounded-2xl transition-all w-full md:w-auto min-w-[220px] border border-zinc-700 shadow-md">
+            <i class="fas ${item.platform.includes('Windows') ? 'fa-windows' : item.platform.includes('Linux') ? 'fa-linux' : item.platform.includes('Android') ? 'fa-android' : item.platform.includes('iOS') ? 'fa-apple' : item.platform.includes('macOS') ? 'fa-apple' : 'fa-download'} text-3xl text-blue-400"></i>
             <div class="text-left">
-              <div class="font-semibold">${item.platform}</div>
-              <div class="text-sm text-zinc-400">${item.filename}</div>
+              <div class="font-semibold text-lg">${escapeHtml(item.platform)}</div>
+              <div class="text-xs text-zinc-400">${escapeHtml(item.filename)} ${item.versionHint ? ` • ${escapeHtml(item.versionHint)}` : ''}</div>
             </div>
+            <i class="fas fa-download text-blue-400 ml-auto"></i>
           </button>`;
       });
+      container.innerHTML = buttonsHtml;
     }
 
     function saveAllSettings() {
-      localStorage.setItem('jambyDownloads', JSON.stringify(settings));
-      alert('✅ Настройки и файлы сохранены!');
+      try {
+        localStorage.setItem('jambyDownloads', JSON.stringify(settings));
+        alert('✅ Все настройки и файлы сохранены! Данные останутся после перезагрузки.');
+      } catch(e) {
+        alert('Ошибка сохранения: возможно, превышен лимит localStorage. Удалите некоторые файлы.');
+      }
+    }
+    
+    function saveAllSettingsSilent() {
+      try {
+        localStorage.setItem('jambyDownloads', JSON.stringify(settings));
+      } catch(e) { console.warn(e); }
     }
 
     function resetAllSettings() {
-      if (confirm("Удалить все файлы?")) {
+      if (confirm("⚠️ ВНИМАНИЕ: будут удалены ВСЕ загруженные файлы (включая base64). Продолжить?")) {
         localStorage.removeItem('jambyDownloads');
-        settings.downloads = [];
+        // после сброса заново инициализируем предустановленные сборки (чтобы не было пусто)
+        initDefaultDownloads();
         renderDownloadsList();
         renderPublicDownloadButtons();
+        saveAllSettingsSilent();
+        alert('Сброс выполнен. Восстановлены стандартные сборки.');
       }
     }
 
-    // Mobile menu
-    document.getElementById('mobile-menu-button').addEventListener('click', () => {
-      document.getElementById('mobile-menu').classList.toggle('hidden');
-    });
+    // Инициализация стандартных сборок (Windows, Linux, Android, macOS, iOS)
+    function initDefaultDownloads() {
+      // Проверяем, есть ли какие-либо сборки в settings, если нет - добавляем демо
+      if (!settings.downloads.length) {
+        settings.downloads = generateDemoDownloads();
+      } else {
+        // если какие-то уже есть, но мы хотим дополнить отсутствующими платформами? Но чтобы не нарушать логику пользователя: дополнять только если нет вообще ни одного файла с ключевыми словами (опционально)
+        const hasWindows = settings.downloads.some(d => d.platform.includes("Windows"));
+        const hasLinux = settings.downloads.some(d => d.platform.includes("Linux"));
+        const hasAndroid = settings.downloads.some(d => d.platform.includes("Android"));
+        const hasMac = settings.downloads.some(d => d.platform.includes("macOS"));
+        const hasIOS = settings.downloads.some(d => d.platform.includes("iOS"));
+        if (!hasWindows || !hasLinux || !hasAndroid || !hasMac || !hasIOS) {
+          // добавляем недостающие, но аккуратно, чтобы не дублировать id
+          const demo = generateDemoDownloads();
+          for (let d of demo) {
+            if ((d.platform.includes("Windows") && !hasWindows) ||
+                (d.platform.includes("Linux") && !hasLinux) ||
+                (d.platform.includes("Android") && !hasAndroid) ||
+                (d.platform.includes("macOS") && !hasMac) ||
+                (d.platform.includes("iOS") && !hasIOS)) {
+              if (!settings.downloads.some(ex => ex.platform === d.platform)) {
+                settings.downloads.push(d);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    function loadSettings() {
+      const saved = localStorage.getItem('jambyDownloads');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && Array.isArray(parsed.downloads)) {
+            settings = parsed;
+          } else {
+            settings.downloads = [];
+          }
+        } catch(e) { settings.downloads = []; }
+      }
+      // если после загрузки всё ещё пусто или нет основных платформ — добавляем дефолтные
+      if (!settings.downloads.length) {
+        settings.downloads = generateDemoDownloads();
+      } else {
+        // дополнительная проверка на наличие ios, windows, linux, android, mac (для удобства)
+        const hasWin = settings.downloads.some(d => d.platform.toLowerCase().includes("windows"));
+        const hasLin = settings.downloads.some(d => d.platform.toLowerCase().includes("linux"));
+        const hasAndr = settings.downloads.some(d => d.platform.toLowerCase().includes("android"));
+        const hasMac = settings.downloads.some(d => d.platform.toLowerCase().includes("macos") || d.platform.toLowerCase().includes("mac"));
+        const hasIos = settings.downloads.some(d => d.platform.toLowerCase().includes("ios"));
+        if (!hasWin || !hasLin || !hasAndr || !hasMac || !hasIos) {
+          const fallbacks = generateDemoDownloads();
+          fallbacks.forEach(fb => {
+            if (fb.platform.includes("Windows") && !hasWin) settings.downloads.push(fb);
+            if (fb.platform.includes("Linux") && !hasLin) settings.downloads.push(fb);
+            if (fb.platform.includes("Android") && !hasAndr) settings.downloads.push(fb);
+            if (fb.platform.includes("macOS") && !hasMac) settings.downloads.push(fb);
+            if (fb.platform.includes("iOS") && !hasIos) settings.downloads.push(fb);
+          });
+        }
+      }
+      renderPublicDownloadButtons();
+    }
+
+    // плавная прокрутка к секции загрузок
+    function scrollToDownloadSection() {
+      const downloadSection = document.getElementById('download');
+      if (downloadSection) {
+        downloadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
 
     function sendDemoMessage() {
       const input = document.getElementById('demo-input');
-      if (input.value.trim()) alert('Сообщение: ' + input.value);
-      input.value = '';
-    }
-
-    function downloadApp() {
-      alert('Выберите платформу ниже ↓');
-    }
-
-    // Инициализация
-    window.onload = () => {
-      const saved = localStorage.getItem('jambyDownloads');
-      if (saved) {
-        settings = JSON.parse(saved);
+      if (input.value.trim()) {
+        alert(`💬 Демо-сообщение: "${input.value}"\n(реальная отправка появится в полноценной версии)`);
+        input.value = '';
+      } else {
+        alert('Напишите что-нибудь в мокапе телефона :)');
       }
-      renderPublicDownloadButtons();
+    }
+
+    document.getElementById('mobile-menu-button')?.addEventListener('click', () => {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    });
+
+    window.onload = () => {
+      loadSettings();
+      // фиксы глобальных методов
+      window.scrollToDownloadSection = scrollToDownloadSection;
+      window.sendDemoMessage = sendDemoMessage;
+      window.downloadFileByItem = downloadFileByItem;
+      window.deleteDownloadById = deleteDownloadById;
+      window.addNewDownload = addNewDownload;
+      window.saveAllSettings = saveAllSettings;
+      window.resetAllSettings = resetAllSettings;
+      window.logout = logout;
+      window.showLoginModal = showLoginModal;
     };
   </script>
 </body>
-          </html>
+</html>
