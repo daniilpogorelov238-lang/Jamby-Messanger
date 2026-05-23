@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Jamby — Private Messenger | Безопасный мессенджер</title>
-  <link rel="icon" id="dynamic-favicon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-weight='bold'%3E🪐%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+  <!-- Динамический favicon: сюда будет подставлена ссылка из localStorage при загрузке -->
+  <link rel="icon" id="dynamic-favicon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-weight='bold'%3E🪐%3C/text%3E%3C/svg%3E" type="image/x-icon">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <style>
@@ -136,7 +137,7 @@
     </div>
   </section>
 
-  <!-- АДМИН-ПАНЕЛЬ с новой вкладкой для иконки сайта -->
+  <!-- АДМИН-ПАНЕЛЬ с возможностью установки иконки (сохраняется навсегда) -->
   <div id="admin-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[2000] p-4">
     <div class="bg-zinc-900 rounded-3xl w-full max-w-4xl max-h-[95vh] overflow-hidden border border-zinc-700 shadow-2xl">
       <div class="p-6 border-b border-zinc-700 flex justify-between items-center bg-zinc-800/50">
@@ -170,11 +171,11 @@
         </div>
       </div>
 
-      <!-- Панель: Иконка сайта (Favicon) -->
+      <!-- Панель: Иконка сайта (Favicon) с сохранением после перезагрузки -->
       <div id="tab-favicon" class="p-6 space-y-6 overflow-y-auto max-h-[60vh] hidden">
         <div class="bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-2xl p-6 border border-zinc-700">
           <h3 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="fas fa-image text-blue-400"></i> Настройка иконки сайта</h3>
-          <p class="text-zinc-400 text-sm mb-6">Загрузите изображение (PNG, JPG, SVG, GIF) — оно автоматически станет favicon во вкладке браузера и в закладках.</p>
+          <p class="text-zinc-400 text-sm mb-6">Загрузите изображение (PNG, JPG, SVG, GIF) — оно автоматически станет favicon во вкладке браузера и сохранится после обновления страницы.</p>
           
           <!-- Текущий превью -->
           <div class="bg-zinc-800/60 rounded-2xl p-5 mb-6 flex items-center gap-6 flex-wrap">
@@ -186,7 +187,7 @@
             </div>
             <div class="flex-1">
               <div class="text-sm text-zinc-300">Рекомендуемый размер: 32x32, 64x64 или 128x128 пикселей. SVG предпочтительнее.</div>
-              <div class="text-xs text-zinc-500 mt-1">Иконка будет отображаться во вкладках браузера, истории, закладках.</div>
+              <div class="text-xs text-zinc-500 mt-1">Иконка будет отображаться во вкладках браузера, истории, закладках. Сохраняется навсегда в localStorage.</div>
             </div>
           </div>
           
@@ -200,7 +201,7 @@
             </div>
           </div>
         </div>
-        <div class="text-xs text-zinc-500 p-3 text-center bg-zinc-800/30 rounded-xl">Иконка сохраняется в localStorage и будет использоваться при каждом визите.</div>
+        <div class="text-xs text-zinc-500 p-3 text-center bg-zinc-800/30 rounded-xl">✅ Иконка сохраняется автоматически. При обновлении страницы (F5) она останется такой же.</div>
       </div>
 
       <div class="border-t border-zinc-700 p-5 flex justify-between bg-zinc-800/30">
@@ -211,36 +212,64 @@
   </div>
 
   <script>
-    // ---------- НАСТРОЙКИ ----------
+    // ---------- НАСТРОЙКИ С СОХРАНЕНИЕМ ИКОНКИ ПОСЛЕ ПЕРЕЗАГРУЗКИ ----------
     let settings = {
       downloads: [],
-      faviconData: null   // { base64, mimeType, url }
+      faviconData: null   // { base64, mimeType }
     };
 
     const ADMIN_PASSWORD = "jamby2026";
     let currentTab = "files";
 
-    // Функция для обновления favicon на странице
+    // КЛЮЧЕВАЯ ФУНКЦИЯ: обновление favicon на странице и сохранение в localStorage для перезагрузок
     function updateFavicon(base64Data, mimeType) {
       let faviconUrl;
       if (base64Data && mimeType) {
         faviconUrl = `data:${mimeType};base64,${base64Data}`;
       } else {
-        // Стандартная SVG иконка по умолчанию (эмодзи-планета)
+        // Стандартная SVG иконка по умолчанию (планета)
         faviconUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-weight='bold'%3E🪐%3C/text%3E%3C/svg%3E";
       }
+      // Обновляем элемент <link> для favicon
       let link = document.querySelector("link[rel*='icon']") || document.createElement('link');
       link.type = 'image/x-icon';
       link.rel = 'shortcut icon';
       link.href = faviconUrl;
       document.getElementsByTagName('head')[0].appendChild(link);
       
-      // Обновить превью в админ-панели, если открыта
+      // Обновляем превью в админ-панели, если она открыта
       const previewImg = document.getElementById('favicon-preview-img');
       if (previewImg) previewImg.src = faviconUrl;
+      
+      // Дополнительно сохраняем favicon в localStorage, чтобы после перезагрузки подхватить
+      if (base64Data && mimeType) {
+        localStorage.setItem('jambyFaviconBase64', base64Data);
+        localStorage.setItem('jambyFaviconMime', mimeType);
+      } else {
+        localStorage.removeItem('jambyFaviconBase64');
+        localStorage.removeItem('jambyFaviconMime');
+      }
     }
 
-    // Загрузка favicon в настройки
+    // Загрузка favicon из localStorage при старте страницы (чтобы сохранялась после F5)
+    function loadFaviconFromStorage() {
+      const savedBase64 = localStorage.getItem('jambyFaviconBase64');
+      const savedMime = localStorage.getItem('jambyFaviconMime');
+      if (savedBase64 && savedMime) {
+        updateFavicon(savedBase64, savedMime);
+        if (settings) {
+          if (!settings.faviconData) settings.faviconData = {};
+          settings.faviconData.base64 = savedBase64;
+          settings.faviconData.mimeType = savedMime;
+        }
+      } else {
+        // Если в localStorage ничего нет, ставим стандартную иконку
+        updateFavicon(null, null);
+        if (settings && settings.faviconData) settings.faviconData = null;
+      }
+    }
+
+    // Загрузка favicon в настройки и сохранение
     function uploadFavicon() {
       const fileInput = document.getElementById('favicon-upload');
       if (!fileInput.files || fileInput.files.length === 0) {
@@ -261,7 +290,7 @@
         };
         updateFavicon(base64, file.type);
         renderFaviconPreview();
-        alert("✅ Иконка сайта обновлена!");
+        alert("✅ Иконка сайта обновлена! Она сохранится после перезагрузки страницы.");
         saveAllSettingsSilent();
       };
       reader.readAsDataURL(file);
@@ -301,7 +330,7 @@
         filesBtn.classList.remove('text-zinc-400');
         faviconBtn.classList.remove('border-b-2', 'border-blue-500', 'text-blue-400');
         faviconBtn.classList.add('text-zinc-400');
-        renderDownloadsList(); // обновить список при показе
+        renderDownloadsList();
       } else {
         filesTab.classList.add('hidden');
         faviconTab.classList.remove('hidden');
@@ -313,7 +342,7 @@
       }
     }
 
-    // ---- РАБОТА С ФАЙЛАМИ ЗАГРУЗОК (ОСТАЛОСЬ БЕЗ ИЗМЕНЕНИЙ) ----
+    // ---- РАБОТА С ФАЙЛАМИ ЗАГРУЗОК (оставлено без изменений) ----
     function generateDemoDownloads() {
       const createPlaceholderFile = (platformName, details) => {
         const content = `Это демонстрационный файл Jamby для ${platformName}.\n${details}\n\nВ реальной сборке здесь будет установщик.\nОфициальный сайт: jamby.messenger`;
@@ -383,13 +412,31 @@
       container.innerHTML = html;
     }
     function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-    function saveAllSettings() { localStorage.setItem('jambyFullSettings', JSON.stringify(settings)); alert('Сохранено!'); }
+    function saveAllSettings() { 
+      localStorage.setItem('jambyFullSettings', JSON.stringify(settings)); 
+      alert('Сохранено!');
+    }
     function saveAllSettingsSilent() { localStorage.setItem('jambyFullSettings', JSON.stringify(settings)); }
-    function resetAllSettings() { if(confirm("Сбросить ВСЕ файлы и иконку?")) { settings = { downloads: [], faviconData: null }; resetFaviconToDefault(); renderDownloadsList(); renderPublicDownloadButtons(); saveAllSettingsSilent(); alert("Сброшено"); } }
+    function resetAllSettings() { 
+      if(confirm("Сбросить ВСЕ файлы и иконку?")) { 
+        settings = { downloads: [], faviconData: null }; 
+        resetFaviconToDefault(); 
+        renderDownloadsList(); 
+        renderPublicDownloadButtons(); 
+        saveAllSettingsSilent(); 
+        alert("Сброшено"); 
+      } 
+    }
     function loadAllSettings() {
       const saved = localStorage.getItem('jambyFullSettings');
-      if(saved) { try { const parsed = JSON.parse(saved); settings = parsed; if(!settings.downloads) settings.downloads = []; if(settings.faviconData && settings.faviconData.base64) updateFavicon(settings.faviconData.base64, settings.faviconData.mimeType); else updateFavicon(null, null); } catch(e) {} }
-      if(!settings.downloads.length) settings.downloads = generateDemoDownloads();
+      if(saved) { try { const parsed = JSON.parse(saved); settings = parsed; if(!settings.downloads) settings.downloads = []; } catch(e) {} }
+      if(!settings.downloads || !settings.downloads.length) settings.downloads = generateDemoDownloads();
+      // Загружаем favicon из localStorage (приоритет: сначала из settings, потом из отдельных ключей)
+      if(settings.faviconData && settings.faviconData.base64) {
+        updateFavicon(settings.faviconData.base64, settings.faviconData.mimeType);
+      } else {
+        loadFaviconFromStorage(); // подхватывает отдельные ключи
+      }
       renderPublicDownloadButtons();
       renderFaviconPreview();
     }
@@ -398,7 +445,20 @@
     function scrollToDownloadSection() { document.getElementById('download').scrollIntoView({ behavior: 'smooth' }); }
     function sendDemoMessage() { const input = document.getElementById('demo-input'); if(input.value.trim()) alert(`Демо: ${input.value}`); input.value = ''; }
     document.getElementById('mobile-menu-button')?.addEventListener('click', () => document.getElementById('mobile-menu').classList.toggle('hidden'));
-    window.onload = () => { loadAllSettings(); window.scrollToDownloadSection = scrollToDownloadSection; window.sendDemoMessage = sendDemoMessage; window.showLoginModal = showLoginModal; window.logout = logout; window.switchAdminTab = switchAdminTab; window.uploadFavicon = uploadFavicon; window.resetFaviconToDefault = resetFaviconToDefault; window.addNewDownload = addNewDownload; window.saveAllSettings = saveAllSettings; window.resetAllSettings = resetAllSettings; };
+    
+    window.onload = () => { 
+      loadAllSettings(); 
+      window.scrollToDownloadSection = scrollToDownloadSection; 
+      window.sendDemoMessage = sendDemoMessage; 
+      window.showLoginModal = showLoginModal; 
+      window.logout = logout; 
+      window.switchAdminTab = switchAdminTab; 
+      window.uploadFavicon = uploadFavicon; 
+      window.resetFaviconToDefault = resetFaviconToDefault; 
+      window.addNewDownload = addNewDownload; 
+      window.saveAllSettings = saveAllSettings; 
+      window.resetAllSettings = resetAllSettings; 
+    };
   </script>
 </body>
 </html>
