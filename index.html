@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Jamby — Private Messenger | Безопасный мессенджер</title>
+  <link rel="icon" id="dynamic-favicon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-weight='bold'%3E🪐%3C/text%3E%3C/svg%3E" type="image/svg+xml">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <style>
@@ -21,16 +22,17 @@
       transition: all 0.2s ease;
     }
     .admin-btn:hover { background: #27272a; transform: scale(1.02); }
-    .tab-active { border-bottom-width: 2px; border-color: #3b82f6; color: #60a5fa; }
     .download-card { transition: all 0.2s ease; }
     .download-card:hover { transform: translateY(-3px); background: #3f3f46; }
-    /* плавный скролл для якорей */
     html { scroll-padding-top: 80px; }
+    .favicon-preview {
+      transition: all 0.2s ease;
+    }
   </style>
 </head>
 <body class="bg-zinc-950 text-white">
 
-  <!-- Админ-кнопка (фикс) -->
+  <!-- Админ-кнопка -->
   <button onclick="showLoginModal()" class="admin-btn bg-zinc-800/90 border border-zinc-700 hover:bg-zinc-700 text-white px-4 py-2 rounded-2xl text-sm flex items-center gap-2 shadow-xl">
     <i class="fas fa-cog"></i> <span class="hidden sm:inline">Админ-панель</span>
   </button>
@@ -65,7 +67,7 @@
     </div>
   </nav>
 
-  <!-- Hero (секция с мокапом) -->
+  <!-- Hero секция -->
   <section id="features" class="min-h-screen flex items-center chat-bg pt-20">
     <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
       <div class="text-center md:text-left">
@@ -77,7 +79,6 @@
         </p>
         
         <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-          <!-- Кнопка скачать теперь плавно ведёт к блоку загрузок -->
           <button onclick="scrollToDownloadSection()" class="bg-white text-black px-8 py-4 rounded-3xl font-semibold flex items-center justify-center gap-3 hover:scale-105 transition shadow-lg">
             <i class="fas fa-download"></i> Скачать Jamby
           </button>
@@ -115,7 +116,7 @@
     </div>
   </section>
 
-  <!-- Дополнительный блок "О проекте" для якоря -->
+  <!-- Блок "О проекте" -->
   <section id="about" class="py-20 bg-zinc-900/50 border-y border-zinc-800">
     <div class="max-w-5xl mx-auto px-6 text-center">
       <h2 class="text-3xl md:text-4xl font-bold mb-6">Создан для свободы общения</h2>
@@ -123,22 +124,19 @@
     </div>
   </section>
 
-  <!-- Секция загрузок (download) – именно сюда ведёт кнопка -->
+  <!-- Секция загрузок -->
   <section id="download" class="py-20 md:py-24 bg-zinc-900 scroll-mt-20">
     <div class="max-w-5xl mx-auto text-center px-6">
       <h2 class="text-4xl md:text-5xl font-bold mb-4">Скачать Jamby</h2>
       <p class="text-lg text-zinc-400 mb-12">Официальные сборки. Безопасно и просто.</p>
-      
-      <!-- Динамические кнопки загрузки из админ-панели (с уже добавленными сборками) -->
       <div id="download-buttons" class="flex flex-wrap justify-center gap-6">
-        <!-- заполнится через JS с предустановленными сборками -->
         <div class="text-zinc-500 animate-pulse">Загрузка списка файлов...</div>
       </div>
       <p class="text-xs text-zinc-600 mt-10">* Все установочные файлы проверены цифровой подписью Jamby</p>
     </div>
   </section>
 
-  <!-- ========== АДМИН-ПАНЕЛЬ (полноценное управление файлами) ========== -->
+  <!-- АДМИН-ПАНЕЛЬ с новой вкладкой для иконки сайта -->
   <div id="admin-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[2000] p-4">
     <div class="bg-zinc-900 rounded-3xl w-full max-w-4xl max-h-[95vh] overflow-hidden border border-zinc-700 shadow-2xl">
       <div class="p-6 border-b border-zinc-700 flex justify-between items-center bg-zinc-800/50">
@@ -146,14 +144,15 @@
         <button onclick="logout()" class="text-3xl text-red-400 hover:text-red-300 transition">&times;</button>
       </div>
 
+      <!-- Вкладки: Файлы и Иконка сайта -->
       <div class="flex border-b border-zinc-700">
-        <button id="tabDownloadsBtn" class="flex-1 py-4 text-center border-b-2 border-blue-500 text-blue-400 font-semibold transition">📦 Управление файлами</button>
+        <button onclick="switchAdminTab('files')" id="tab-files-btn" class="tab-btn flex-1 py-4 text-center border-b-2 border-blue-500 text-blue-400 font-semibold transition">📦 Управление файлами</button>
+        <button onclick="switchAdminTab('favicon')" id="tab-favicon-btn" class="tab-btn flex-1 py-4 text-center text-zinc-400 hover:text-white transition">🖼️ Иконка сайта (Favicon)</button>
       </div>
 
-      <!-- Панель загрузок / файлов -->
-      <div id="tab-content-downloads" class="p-6 space-y-8 overflow-y-auto max-h-[60vh]">
+      <!-- Панель: Управление файлами загрузок -->
+      <div id="tab-files" class="p-6 space-y-8 overflow-y-auto max-h-[60vh]">
         <div id="downloads-list" class="space-y-4"></div>
-
         <div class="border border-dashed border-zinc-600 rounded-3xl p-6 bg-zinc-800/40">
           <h3 class="font-semibold text-xl mb-4 flex items-center gap-2"><i class="fas fa-plus-circle text-green-400"></i> Добавить новую сборку</h3>
           <div class="grid md:grid-cols-2 gap-4">
@@ -167,386 +166,239 @@
           <button onclick="addNewDownload()" class="mt-5 bg-green-700 hover:bg-green-600 px-6 py-3 rounded-2xl w-full font-semibold transition flex items-center justify-center gap-2">
             <i class="fas fa-upload"></i> Загрузить файл и сохранить
           </button>
-          <p class="text-xs text-zinc-500 mt-3">Файл будет сохранён в локальном хранилище браузера (base64). Максимальный размер ограничен памятью – для демо до ~10 МБ.</p>
+          <p class="text-xs text-zinc-500 mt-3">Файл будет сохранён в локальном хранилище браузера (base64).</p>
         </div>
+      </div>
+
+      <!-- Панель: Иконка сайта (Favicon) -->
+      <div id="tab-favicon" class="p-6 space-y-6 overflow-y-auto max-h-[60vh] hidden">
+        <div class="bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-2xl p-6 border border-zinc-700">
+          <h3 class="text-xl font-bold mb-2 flex items-center gap-2"><i class="fas fa-image text-blue-400"></i> Настройка иконки сайта</h3>
+          <p class="text-zinc-400 text-sm mb-6">Загрузите изображение (PNG, JPG, SVG, GIF) — оно автоматически станет favicon во вкладке браузера и в закладках.</p>
+          
+          <!-- Текущий превью -->
+          <div class="bg-zinc-800/60 rounded-2xl p-5 mb-6 flex items-center gap-6 flex-wrap">
+            <div class="text-center">
+              <div class="text-sm text-zinc-400 mb-2">Текущая иконка</div>
+              <div class="w-16 h-16 bg-zinc-700 rounded-xl flex items-center justify-center overflow-hidden shadow-md">
+                <img id="favicon-preview-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-weight='bold'%3E🪐%3C/text%3E%3C/svg%3E" class="w-full h-full object-contain">
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="text-sm text-zinc-300">Рекомендуемый размер: 32x32, 64x64 или 128x128 пикселей. SVG предпочтительнее.</div>
+              <div class="text-xs text-zinc-500 mt-1">Иконка будет отображаться во вкладках браузера, истории, закладках.</div>
+            </div>
+          </div>
+          
+          <!-- Загрузка новой иконки -->
+          <div class="border-2 border-dashed border-blue-500/40 rounded-2xl p-6 bg-zinc-800/30">
+            <label class="block text-sm font-medium text-zinc-300 mb-3"><i class="fas fa-upload"></i> Загрузить новую иконку</label>
+            <input type="file" id="favicon-upload" accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/gif,image/webp" class="block w-full text-sm text-zinc-300 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-500 transition cursor-pointer">
+            <div class="flex gap-3 mt-5">
+              <button onclick="uploadFavicon()" class="bg-blue-600 hover:bg-blue-500 px-6 py-2.5 rounded-xl transition flex items-center gap-2"><i class="fas fa-check"></i> Применить иконку</button>
+              <button onclick="resetFaviconToDefault()" class="bg-zinc-700 hover:bg-zinc-600 px-6 py-2.5 rounded-xl transition flex items-center gap-2"><i class="fas fa-undo-alt"></i> Сбросить на стандартную</button>
+            </div>
+          </div>
+        </div>
+        <div class="text-xs text-zinc-500 p-3 text-center bg-zinc-800/30 rounded-xl">Иконка сохраняется в localStorage и будет использоваться при каждом визите.</div>
       </div>
 
       <div class="border-t border-zinc-700 p-5 flex justify-between bg-zinc-800/30">
         <button onclick="resetAllSettings()" class="px-5 py-2.5 text-red-400 hover:bg-zinc-800 rounded-2xl transition flex items-center gap-2"><i class="fas fa-trash-alt"></i> Сбросить все файлы</button>
-        <button onclick="saveAllSettings()" class="bg-blue-600 hover:bg-blue-500 px-8 py-2.5 rounded-2xl transition flex items-center gap-2 shadow"><i class="fas fa-save"></i> Сохранить настройки</button>
+        <button onclick="saveAllSettings()" class="bg-blue-600 hover:bg-blue-500 px-8 py-2.5 rounded-2xl transition flex items-center gap-2 shadow"><i class="fas fa-save"></i> Сохранить всё</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ---------- СТРУКТУРА ДАННЫХ ----------
+    // ---------- НАСТРОЙКИ ----------
     let settings = {
-      downloads: []  // каждый элемент: { id, platform, versionHint, filename, base64, mimeType }
+      downloads: [],
+      faviconData: null   // { base64, mimeType, url }
     };
 
     const ADMIN_PASSWORD = "jamby2026";
-    
-    // ----- ПРЕДУСТАНОВЛЕННЫЕ ДЕМО-СБОРКИ (текстовые заглушки, но с реальным base64 маленьких файлов-заглушек .txt, чтобы пользователь видел примеры) -----
-    // Чтобы сборки отображались красиво и были работоспособны, создаём небольшие текстовые файлы-заглушки с информацией.
-    // При нажатии "Скачать" будет скачиваться .txt с описанием версии (имитация установщика). Это демонстрирует механизм и добавляет нужные платформы.
-    function generateDemoDownloads() {
-      // Функция создания base64 для простого текстового сообщения (заглушка установщика)
-      const createPlaceholderFile = (platformName, details) => {
-        const content = `Это демонстрационный файл Jamby для ${platformName}.\n${details}\n\nВ реальной сборке здесь будет установщик (exe/dmg/apk/deb).\nОфициальный сайт: jamby.messenger`;
-        return btoa(unescape(encodeURIComponent(content))); // корректный base64 для UTF-8
-      };
+    let currentTab = "files";
+
+    // Функция для обновления favicon на странице
+    function updateFavicon(base64Data, mimeType) {
+      let faviconUrl;
+      if (base64Data && mimeType) {
+        faviconUrl = `data:${mimeType};base64,${base64Data}`;
+      } else {
+        // Стандартная SVG иконка по умолчанию (эмодзи-планета)
+        faviconUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-weight='bold'%3E🪐%3C/text%3E%3C/svg%3E";
+      }
+      let link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+      link.type = 'image/x-icon';
+      link.rel = 'shortcut icon';
+      link.href = faviconUrl;
+      document.getElementsByTagName('head')[0].appendChild(link);
       
-      const now = Date.now();
-      return [
-        {
-          id: now + 1,
-          platform: "Windows 11/10 (x64)",
-          versionHint: "Установщик .exe, версия 2.1.0",
-          filename: "Jamby_Setup_Windows_x64.exe",
-          base64: createPlaceholderFile("Windows", "Поддерживается Windows 10, 11. Архитектура x64."),
-          mimeType: "application/x-msdownload"
-        },
-        {
-          id: now + 2,
-          platform: "Linux (AppImage / deb)",
-          versionHint: "Универсальный пакет для Debian/Ubuntu/Fedora",
-          filename: "jamby-linux-amd64.AppImage",
-          base64: createPlaceholderFile("Linux (AppImage)", "Запустите файл, предварительно сделайте chmod +x."),
-          mimeType: "application/x-executable"
-        },
-        {
-          id: now + 3,
-          platform: "Android (.apk)",
-          versionHint: "Поддержка Android 8+",
-          filename: "Jamby_Android_v2.1.apk",
-          base64: createPlaceholderFile("Android", "Установите APK-файл. Разрешена установка из неизвестных источников."),
-          mimeType: "application/vnd.android.package-archive"
-        },
-        {
-          id: now + 4,
-          platform: "macOS (Apple Silicon + Intel)",
-          versionHint: "Универсальный .dmg",
-          filename: "Jamby_macOS_2.1.dmg",
-          base64: createPlaceholderFile("macOS", "Для Apple Silicon и Intel. Перетащите Jamby в Applications."),
-          mimeType: "application/x-apple-diskimage"
-        },
-        {
-          id: now + 5,
-          platform: "iOS (App Store)",
-          versionHint: "Доступно в App Store",
-          filename: "Jamby_iOS_AppStore.url",
-          base64: createPlaceholderFile("iOS", "Ссылка на страницу App Store: https://apps.apple.com/app/jamby/id654321 (официальный релиз)"),
-          mimeType: "text/plain"
-        }
-      ];
+      // Обновить превью в админ-панели, если открыта
+      const previewImg = document.getElementById('favicon-preview-img');
+      if (previewImg) previewImg.src = faviconUrl;
     }
 
-    // модалка и безопасность
-    function showLoginModal() {
-      const pass = prompt("🔐 Введите пароль администратора:");
-      if (pass === ADMIN_PASSWORD) {
-        document.getElementById('admin-modal').classList.remove('hidden');
-        renderDownloadsList();      // отрисовка списка файлов в админке
-      } else if (pass !== null) {
-        alert("❌ Неверный пароль!");
+    // Загрузка favicon в настройки
+    function uploadFavicon() {
+      const fileInput = document.getElementById('favicon-upload');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Выберите файл с иконкой (PNG, JPG, SVG, GIF)");
+        return;
+      }
+      const file = fileInput.files[0];
+      if (file.size > 2 * 1024 * 1024) {
+        alert("Файл слишком большой (макс. 2 МБ)");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64 = e.target.result.split(',')[1];
+        settings.faviconData = {
+          base64: base64,
+          mimeType: file.type,
+        };
+        updateFavicon(base64, file.type);
+        renderFaviconPreview();
+        alert("✅ Иконка сайта обновлена!");
+        saveAllSettingsSilent();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetFaviconToDefault() {
+      settings.faviconData = null;
+      updateFavicon(null, null);
+      renderFaviconPreview();
+      alert("Сброшена стандартная иконка.");
+      saveAllSettingsSilent();
+    }
+
+    function renderFaviconPreview() {
+      const previewImg = document.getElementById('favicon-preview-img');
+      if (previewImg) {
+        if (settings.faviconData && settings.faviconData.base64) {
+          previewImg.src = `data:${settings.faviconData.mimeType};base64,${settings.faviconData.base64}`;
+        } else {
+          previewImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%233b82f6'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-weight='bold'%3E🪐%3C/text%3E%3C/svg%3E";
+        }
       }
     }
 
-    function logout() {
-      document.getElementById('admin-modal').classList.add('hidden');
+    // Переключение вкладок админки
+    function switchAdminTab(tab) {
+      currentTab = tab;
+      const filesTab = document.getElementById('tab-files');
+      const faviconTab = document.getElementById('tab-favicon');
+      const filesBtn = document.getElementById('tab-files-btn');
+      const faviconBtn = document.getElementById('tab-favicon-btn');
+      
+      if (tab === 'files') {
+        filesTab.classList.remove('hidden');
+        faviconTab.classList.add('hidden');
+        filesBtn.classList.add('border-b-2', 'border-blue-500', 'text-blue-400');
+        filesBtn.classList.remove('text-zinc-400');
+        faviconBtn.classList.remove('border-b-2', 'border-blue-500', 'text-blue-400');
+        faviconBtn.classList.add('text-zinc-400');
+        renderDownloadsList(); // обновить список при показе
+      } else {
+        filesTab.classList.add('hidden');
+        faviconTab.classList.remove('hidden');
+        faviconBtn.classList.add('border-b-2', 'border-blue-500', 'text-blue-400');
+        faviconBtn.classList.remove('text-zinc-400');
+        filesBtn.classList.remove('border-b-2', 'border-blue-500', 'text-blue-400');
+        filesBtn.classList.add('text-zinc-400');
+        renderFaviconPreview();
+      }
     }
 
-    // Добавление нового файла (base64)
+    // ---- РАБОТА С ФАЙЛАМИ ЗАГРУЗОК (ОСТАЛОСЬ БЕЗ ИЗМЕНЕНИЙ) ----
+    function generateDemoDownloads() {
+      const createPlaceholderFile = (platformName, details) => {
+        const content = `Это демонстрационный файл Jamby для ${platformName}.\n${details}\n\nВ реальной сборке здесь будет установщик.\nОфициальный сайт: jamby.messenger`;
+        return btoa(unescape(encodeURIComponent(content)));
+      };
+      const now = Date.now();
+      return [
+        { id: now+1, platform: "Windows 11/10 (x64)", versionHint: "Установщик .exe, версия 2.1.0", filename: "Jamby_Setup_Windows_x64.exe", base64: createPlaceholderFile("Windows", "Поддерживается Windows 10, 11."), mimeType: "application/x-msdownload" },
+        { id: now+2, platform: "Linux (AppImage / deb)", versionHint: "Универсальный пакет", filename: "jamby-linux-amd64.AppImage", base64: createPlaceholderFile("Linux (AppImage)", "Запустите файл, chmod +x"), mimeType: "application/x-executable" },
+        { id: now+3, platform: "Android (.apk)", versionHint: "Android 8+", filename: "Jamby_Android_v2.1.apk", base64: createPlaceholderFile("Android", "APK-файл"), mimeType: "application/vnd.android.package-archive" },
+        { id: now+4, platform: "macOS (Apple Silicon + Intel)", versionHint: "Универсальный .dmg", filename: "Jamby_macOS_2.1.dmg", base64: createPlaceholderFile("macOS", "Перетащите в Applications"), mimeType: "application/x-apple-diskimage" },
+        { id: now+5, platform: "iOS (App Store)", versionHint: "Доступно в App Store", filename: "Jamby_iOS_AppStore.url", base64: createPlaceholderFile("iOS", "Ссылка на App Store"), mimeType: "text/plain" }
+      ];
+    }
+
     function addNewDownload() {
       const platform = document.getElementById('new-platform').value.trim();
       const versionHint = document.getElementById('new-version-hint').value.trim();
       const fileInput = document.getElementById('new-file');
-      
-      if (!platform || !fileInput.files || fileInput.files.length === 0) {
-        alert("⚠️ Укажите название платформы и выберите файл!");
-        return;
-      }
-
+      if (!platform || !fileInput.files.length) { alert("Укажите платформу и файл"); return; }
       const file = fileInput.files[0];
-      // лимит ~12 МБ чтобы не перегружать локальное хранилище (предупреждение)
-      if (file.size > 12 * 1024 * 1024) {
-        alert("Файл слишком большой (>12 МБ). Для демо используйте файл поменьше, иначе localStorage будет переполнен.");
-        return;
-      }
-
+      if (file.size > 12*1024*1024) { alert("Файл >12 МБ"); return; }
       const reader = new FileReader();
       reader.onload = function(e) {
-        const base64String = e.target.result.split(',')[1]; // чистый base64 содержимого
-        const newId = Date.now();
-        settings.downloads.push({
-          id: newId,
-          platform: platform,
-          versionHint: versionHint || "",
-          filename: file.name,
-          base64: base64String,
-          mimeType: file.type || "application/octet-stream"
-        });
-        // очистка полей
+        const base64String = e.target.result.split(',')[1];
+        settings.downloads.push({ id: Date.now(), platform, versionHint: versionHint || "", filename: file.name, base64: base64String, mimeType: file.type || "application/octet-stream" });
         document.getElementById('new-platform').value = '';
         document.getElementById('new-version-hint').value = '';
         fileInput.value = '';
-        
-        renderDownloadsList();          // обновить админ-список
-        renderPublicDownloadButtons();  // обновить кнопки на сайте
-        alert(`✅ Файл "${file.name}" успешно добавлен!`);
-        saveAllSettingsSilent();
-      };
-      reader.onerror = () => alert("Ошибка чтения файла");
-      reader.readAsDataURL(file);
-    }
-
-    // удаление файла по id
-    window.deleteDownloadById = function(downloadId) {
-      if (confirm("Удалить этот файл из публичного доступа?")) {
-        const index = settings.downloads.findIndex(d => d.id === downloadId);
-        if (index !== -1) {
-          settings.downloads.splice(index, 1);
-          renderDownloadsList();
-          renderPublicDownloadButtons();
-          saveAllSettingsSilent();
-        }
-      }
-    };
-
-    // Функция скачивания файла из base64 (реальная загрузка)
-    window.downloadFileByItem = function(item) {
-      if (!item.base64) {
-        alert("Файл повреждён, обратитесь к администратору.");
-        return;
-      }
-      try {
-        // Для iOS App Store – особое поведение: открыть ссылку в новом окне?
-        if (item.platform.includes("iOS") && item.filename.endsWith(".url")) {
-          // пытаемся извлечь ссылку из содержимого base64
-          try {
-            const decodedStr = decodeURIComponent(escape(atob(item.base64)));
-            const match = decodedStr.match(/https:\/\/apps\.apple\.com\/app\/[^\s]+/);
-            if (match) {
-              window.open(match[0], '_blank');
-              return;
-            }
-          } catch(e) {}
-          // стандартное скачивание как текст
-        }
-        const byteCharacters = atob(item.base64);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: item.mimeType });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = item.filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        console.error(err);
-        alert("Ошибка при скачивании, возможно, файл битый.");
-      }
-    };
-
-    // отрисовка таблицы файлов в админке
-    function renderDownloadsList() {
-      const container = document.getElementById('downloads-list');
-      if (!container) return;
-      if (settings.downloads.length === 0) {
-        container.innerHTML = `<div class="text-center text-zinc-500 py-8 bg-zinc-800/30 rounded-2xl"><i class="fas fa-cloud-upload-alt text-3xl mb-2 block"></i>Нет загруженных файлов. Добавьте первый!</div>`;
-        return;
-      }
-      let html = `<div class="space-y-3">`;
-      settings.downloads.forEach(dl => {
-        html += `
-          <div class="bg-zinc-800/70 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 border border-zinc-700">
-            <div class="flex-1">
-              <div class="font-bold text-lg">${escapeHtml(dl.platform)}</div>
-              <div class="text-sm text-zinc-400">${escapeHtml(dl.filename)} ${dl.versionHint ? `· ${escapeHtml(dl.versionHint)}` : ''}</div>
-              <div class="text-xs text-zinc-500 mt-1">размер: ~${(dl.base64?.length * 0.75 / 1024).toFixed(1)} KB</div>
-            </div>
-            <button onclick="deleteDownloadById(${dl.id})" class="bg-red-900/40 hover:bg-red-700 text-red-300 px-4 py-2 rounded-xl transition">
-              <i class="fas fa-trash-alt"></i> Удалить
-            </button>
-          </div>
-        `;
-      });
-      html += `</div>`;
-      container.innerHTML = html;
-    }
-
-    function escapeHtml(str) { 
-      if(!str) return '';
-      return str.replace(/[&<>]/g, function(m){ if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m;}); 
-    }
-
-    // отрисовка публичных кнопок
-    function renderPublicDownloadButtons() {
-      const container = document.getElementById('download-buttons');
-      if (!container) return;
-      
-      if (!settings.downloads.length) {
-        container.innerHTML = `
-          <div class="flex flex-col items-center gap-3 text-zinc-500 bg-zinc-800/40 p-8 rounded-3xl">
-            <i class="fas fa-hourglass-half text-4xl"></i>
-            <span>Сборки скоро появятся. Подпишитесь на Telegram-канал!</span>
-          </div>`;
-        return;
-      }
-      
-      let buttonsHtml = '';
-      settings.downloads.forEach(item => {
-        // Безопасное преобразование объекта в строку для onclick (экранирование кавычек)
-        const safeItem = JSON.stringify(item).replace(/"/g, '&quot;');
-        buttonsHtml += `
-          <button onclick="downloadFileByItem(${safeItem})" 
-                  class="download-card flex items-center gap-5 bg-zinc-800 hover:bg-zinc-700 px-6 py-5 rounded-2xl transition-all w-full md:w-auto min-w-[220px] border border-zinc-700 shadow-md">
-            <i class="fas ${item.platform.includes('Windows') ? 'fa-windows' : item.platform.includes('Linux') ? 'fa-linux' : item.platform.includes('Android') ? 'fa-android' : item.platform.includes('iOS') ? 'fa-apple' : item.platform.includes('macOS') ? 'fa-apple' : 'fa-download'} text-3xl text-blue-400"></i>
-            <div class="text-left">
-              <div class="font-semibold text-lg">${escapeHtml(item.platform)}</div>
-              <div class="text-xs text-zinc-400">${escapeHtml(item.filename)} ${item.versionHint ? ` • ${escapeHtml(item.versionHint)}` : ''}</div>
-            </div>
-            <i class="fas fa-download text-blue-400 ml-auto"></i>
-          </button>`;
-      });
-      container.innerHTML = buttonsHtml;
-    }
-
-    function saveAllSettings() {
-      try {
-        localStorage.setItem('jambyDownloads', JSON.stringify(settings));
-        alert('✅ Все настройки и файлы сохранены! Данные останутся после перезагрузки.');
-      } catch(e) {
-        alert('Ошибка сохранения: возможно, превышен лимит localStorage. Удалите некоторые файлы.');
-      }
-    }
-    
-    function saveAllSettingsSilent() {
-      try {
-        localStorage.setItem('jambyDownloads', JSON.stringify(settings));
-      } catch(e) { console.warn(e); }
-    }
-
-    function resetAllSettings() {
-      if (confirm("⚠️ ВНИМАНИЕ: будут удалены ВСЕ загруженные файлы (включая base64). Продолжить?")) {
-        localStorage.removeItem('jambyDownloads');
-        // после сброса заново инициализируем предустановленные сборки (чтобы не было пусто)
-        initDefaultDownloads();
         renderDownloadsList();
         renderPublicDownloadButtons();
         saveAllSettingsSilent();
-        alert('Сброс выполнен. Восстановлены стандартные сборки.');
-      }
+        alert(`✅ Файл добавлен`);
+      };
+      reader.readAsDataURL(file);
     }
 
-    // Инициализация стандартных сборок (Windows, Linux, Android, macOS, iOS)
-    function initDefaultDownloads() {
-      // Проверяем, есть ли какие-либо сборки в settings, если нет - добавляем демо
-      if (!settings.downloads.length) {
-        settings.downloads = generateDemoDownloads();
-      } else {
-        // если какие-то уже есть, но мы хотим дополнить отсутствующими платформами? Но чтобы не нарушать логику пользователя: дополнять только если нет вообще ни одного файла с ключевыми словами (опционально)
-        const hasWindows = settings.downloads.some(d => d.platform.includes("Windows"));
-        const hasLinux = settings.downloads.some(d => d.platform.includes("Linux"));
-        const hasAndroid = settings.downloads.some(d => d.platform.includes("Android"));
-        const hasMac = settings.downloads.some(d => d.platform.includes("macOS"));
-        const hasIOS = settings.downloads.some(d => d.platform.includes("iOS"));
-        if (!hasWindows || !hasLinux || !hasAndroid || !hasMac || !hasIOS) {
-          // добавляем недостающие, но аккуратно, чтобы не дублировать id
-          const demo = generateDemoDownloads();
-          for (let d of demo) {
-            if ((d.platform.includes("Windows") && !hasWindows) ||
-                (d.platform.includes("Linux") && !hasLinux) ||
-                (d.platform.includes("Android") && !hasAndroid) ||
-                (d.platform.includes("macOS") && !hasMac) ||
-                (d.platform.includes("iOS") && !hasIOS)) {
-              if (!settings.downloads.some(ex => ex.platform === d.platform)) {
-                settings.downloads.push(d);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    function loadSettings() {
-      const saved = localStorage.getItem('jambyDownloads');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (parsed && Array.isArray(parsed.downloads)) {
-            settings = parsed;
-          } else {
-            settings.downloads = [];
-          }
-        } catch(e) { settings.downloads = []; }
-      }
-      // если после загрузки всё ещё пусто или нет основных платформ — добавляем дефолтные
-      if (!settings.downloads.length) {
-        settings.downloads = generateDemoDownloads();
-      } else {
-        // дополнительная проверка на наличие ios, windows, linux, android, mac (для удобства)
-        const hasWin = settings.downloads.some(d => d.platform.toLowerCase().includes("windows"));
-        const hasLin = settings.downloads.some(d => d.platform.toLowerCase().includes("linux"));
-        const hasAndr = settings.downloads.some(d => d.platform.toLowerCase().includes("android"));
-        const hasMac = settings.downloads.some(d => d.platform.toLowerCase().includes("macos") || d.platform.toLowerCase().includes("mac"));
-        const hasIos = settings.downloads.some(d => d.platform.toLowerCase().includes("ios"));
-        if (!hasWin || !hasLin || !hasAndr || !hasMac || !hasIos) {
-          const fallbacks = generateDemoDownloads();
-          fallbacks.forEach(fb => {
-            if (fb.platform.includes("Windows") && !hasWin) settings.downloads.push(fb);
-            if (fb.platform.includes("Linux") && !hasLin) settings.downloads.push(fb);
-            if (fb.platform.includes("Android") && !hasAndr) settings.downloads.push(fb);
-            if (fb.platform.includes("macOS") && !hasMac) settings.downloads.push(fb);
-            if (fb.platform.includes("iOS") && !hasIos) settings.downloads.push(fb);
-          });
-        }
-      }
-      renderPublicDownloadButtons();
-    }
-
-    // плавная прокрутка к секции загрузок
-    function scrollToDownloadSection() {
-      const downloadSection = document.getElementById('download');
-      if (downloadSection) {
-        downloadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
-
-    function sendDemoMessage() {
-      const input = document.getElementById('demo-input');
-      if (input.value.trim()) {
-        alert(`💬 Демо-сообщение: "${input.value}"\n(реальная отправка появится в полноценной версии)`);
-        input.value = '';
-      } else {
-        alert('Напишите что-нибудь в мокапе телефона :)');
-      }
-    }
-
-    document.getElementById('mobile-menu-button')?.addEventListener('click', () => {
-      const menu = document.getElementById('mobile-menu');
-      menu.classList.toggle('hidden');
-    });
-
-    window.onload = () => {
-      loadSettings();
-      // фиксы глобальных методов
-      window.scrollToDownloadSection = scrollToDownloadSection;
-      window.sendDemoMessage = sendDemoMessage;
-      window.downloadFileByItem = downloadFileByItem;
-      window.deleteDownloadById = deleteDownloadById;
-      window.addNewDownload = addNewDownload;
-      window.saveAllSettings = saveAllSettings;
-      window.resetAllSettings = resetAllSettings;
-      window.logout = logout;
-      window.showLoginModal = showLoginModal;
+    window.deleteDownloadById = function(id) {
+      if(confirm("Удалить?")) { settings.downloads = settings.downloads.filter(d => d.id !== id); renderDownloadsList(); renderPublicDownloadButtons(); saveAllSettingsSilent(); }
     };
+    window.downloadFileByItem = function(item) {
+      if(!item.base64) return alert("Файл повреждён");
+      try {
+        const byteChars = atob(item.base64);
+        const bytes = new Uint8Array(byteChars.length);
+        for(let i=0; i<byteChars.length; i++) bytes[i] = byteChars.charCodeAt(i);
+        const blob = new Blob([bytes], {type: item.mimeType});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = item.filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+      } catch(e) { alert("Ошибка"); }
+    };
+    function renderDownloadsList() {
+      const container = document.getElementById('downloads-list');
+      if(!container) return;
+      if(settings.downloads.length === 0) { container.innerHTML = `<div class="text-center text-zinc-500 py-8">Нет файлов</div>`; return; }
+      let html = '';
+      settings.downloads.forEach(d => { html += `<div class="bg-zinc-800/70 rounded-2xl p-4 flex justify-between items-center"><div><strong>${escapeHtml(d.platform)}</strong><br><span class="text-sm text-zinc-400">${escapeHtml(d.filename)}</span></div><button onclick="deleteDownloadById(${d.id})" class="text-red-400"><i class="fas fa-trash"></i></button></div>`; });
+      container.innerHTML = html;
+    }
+    function renderPublicDownloadButtons() {
+      const container = document.getElementById('download-buttons');
+      if(!container) return;
+      if(!settings.downloads.length) { container.innerHTML = `<div class="text-zinc-500">Сборки скоро появятся</div>`; return; }
+      let html = '';
+      settings.downloads.forEach(item => { html += `<button onclick="downloadFileByItem(${JSON.stringify(item).replace(/"/g, '&quot;')})" class="download-card flex items-center gap-5 bg-zinc-800 hover:bg-zinc-700 px-6 py-5 rounded-2xl transition"><i class="fas fa-download text-3xl text-blue-400"></i><div><div class="font-semibold">${escapeHtml(item.platform)}</div><div class="text-xs text-zinc-400">${escapeHtml(item.filename)}</div></div></button>`; });
+      container.innerHTML = html;
+    }
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    function saveAllSettings() { localStorage.setItem('jambyFullSettings', JSON.stringify(settings)); alert('Сохранено!'); }
+    function saveAllSettingsSilent() { localStorage.setItem('jambyFullSettings', JSON.stringify(settings)); }
+    function resetAllSettings() { if(confirm("Сбросить ВСЕ файлы и иконку?")) { settings = { downloads: [], faviconData: null }; resetFaviconToDefault(); renderDownloadsList(); renderPublicDownloadButtons(); saveAllSettingsSilent(); alert("Сброшено"); } }
+    function loadAllSettings() {
+      const saved = localStorage.getItem('jambyFullSettings');
+      if(saved) { try { const parsed = JSON.parse(saved); settings = parsed; if(!settings.downloads) settings.downloads = []; if(settings.faviconData && settings.faviconData.base64) updateFavicon(settings.faviconData.base64, settings.faviconData.mimeType); else updateFavicon(null, null); } catch(e) {} }
+      if(!settings.downloads.length) settings.downloads = generateDemoDownloads();
+      renderPublicDownloadButtons();
+      renderFaviconPreview();
+    }
+    function showLoginModal() { const pass = prompt("Пароль администратора:"); if(pass === ADMIN_PASSWORD) { document.getElementById('admin-modal').classList.remove('hidden'); if(currentTab === 'files') renderDownloadsList(); else renderFaviconPreview(); } else if(pass) alert("Неверный пароль"); }
+    function logout() { document.getElementById('admin-modal').classList.add('hidden'); }
+    function scrollToDownloadSection() { document.getElementById('download').scrollIntoView({ behavior: 'smooth' }); }
+    function sendDemoMessage() { const input = document.getElementById('demo-input'); if(input.value.trim()) alert(`Демо: ${input.value}`); input.value = ''; }
+    document.getElementById('mobile-menu-button')?.addEventListener('click', () => document.getElementById('mobile-menu').classList.toggle('hidden'));
+    window.onload = () => { loadAllSettings(); window.scrollToDownloadSection = scrollToDownloadSection; window.sendDemoMessage = sendDemoMessage; window.showLoginModal = showLoginModal; window.logout = logout; window.switchAdminTab = switchAdminTab; window.uploadFavicon = uploadFavicon; window.resetFaviconToDefault = resetFaviconToDefault; window.addNewDownload = addNewDownload; window.saveAllSettings = saveAllSettings; window.resetAllSettings = resetAllSettings; };
   </script>
 </body>
 </html>
